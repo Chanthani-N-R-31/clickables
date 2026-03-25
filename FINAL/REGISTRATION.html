@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CSS Platform">
+    <title>Registration Form - CSS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Choices.js customization to match UI */
+        .choices__inner {
+            background-color: #f8fafc !important;
+            border-radius: 0.75rem !important;
+            border: 1px solid #d1d5db !important;
+            padding: 0.5rem !important;
+        }
+
+        .choices__list--dropdown {
+            border-radius: 0.75rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gradient-to-br from-[#f4f8fb] via-[#edf3f8] to-[#e0eaf5] text-[#0a192f] antialiased min-h-screen relative pb-20">
+
+    <!-- Global Navigation -->
+    <div class="fixed bottom-6 right-6 flex gap-4 z-[9999]">
+        <button onclick="window.history.back()" class="flex items-center justify-center w-12 h-12 bg-white/80 backdrop-blur-md border border-slate-200 rounded-full shadow-lg hover:bg-white transition-all active:scale-95 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-600 group-hover:text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </button>
+        <a href="IT.drawio (1).html" class="flex items-center justify-center w-12 h-12 bg-blue-600 border border-blue-500 rounded-full shadow-lg hover:bg-blue-700 transition-all active:scale-95 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+        </a>
+    </div>
+
+    <div
+        class="fixed top-[-5%] left-[-5%] w-[50vw] h-[50vw] rounded-full bg-[#005af5] opacity-[0.06] blur-[100px] pointer-events-none z-0">
+    </div>
+    <div
+        class="fixed bottom-[-10%] right-[-5%] w-[45vw] h-[45vw] rounded-full bg-purple-600 opacity-[0.05] blur-[120px] pointer-events-none z-0">
+    </div>
+
+    <div class="relative min-h-screen py-10 px-4 z-10">
+        <div
+            class="max-w-3xl mx-auto bg-white/50 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_20px_50px_-15px_rgba(0,90,245,0.1)] border border-white/60 overflow-hidden transition-all duration-300">
+
+            <div id="successBanner"
+                class="hidden mx-4 mt-4 p-4 bg-green-100 border border-green-400 text-green-800 rounded-xl text-center font-medium">
+                Registration submitted successfully. Please visit the Front Desk.
+            </div>
+
+            <!-- Form Header -->
+            <div
+                class="bg-gradient-to-r from-[#005af5] to-blue-600 p-8 md:p-10 text-white relative flex flex-col justify-center overflow-hidden">
+                <div
+                    class="absolute top-0 right-[-10%] w-[40%] h-[200%] bg-white/10 blur-[50px] rotate-[-20deg] pointer-events-none">
+                </div>
+                <h1 class="text-3xl md:text-4xl px-2 font-extrabold tracking-tight relative z-10">Registration Form</h1>
+                <p class="mt-2 text-blue-100 font-medium px-2 relative z-10 italic">Help us know you better.</p>
+                <button type="button" onclick="fillMockData()"
+                    class="absolute top-8 right-8 bg-white/20 hover:bg-white/30 text-white text-[10px] px-3 py-1.5 rounded-lg border border-white/40 transition-all z-20 font-bold uppercase tracking-widest">
+                    Load Sample Data
+                </button>
+            </div>
+
+            <form id="registrationForm" class="p-8 space-y-8" novalidate>
+
+                <!-- ========== SECTION 1: Category selection ========== -->
+                <section id="stepSection1" class="form-step">
+                    <h2 class="text-xl font-bold text-gray-800 mb-2 flex items-center gap-2 border-b pb-2">
+                        <span
+                            class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold">1</span>
+                        Type of Registration
+                    </h2>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 pt-4">
+                        <label
+                            class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-gray-200 cursor-pointer bg-white hover:border-blue-400 transition-all has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="category" value="athlete" onclick="showSection('athlete')"
+                                class="w-4 h-4 text-blue-600">
+                            <span class="text-xs font-bold text-gray-700 uppercase">Athlete</span>
+                        </label>
+                        <label
+                            class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-gray-200 cursor-pointer bg-white hover:border-blue-400 transition-all has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="category" value="intern" onclick="showSection('intern')"
+                                class="w-4 h-4 text-blue-600">
+                            <span class="text-xs font-bold text-gray-700 uppercase">Intern</span>
+                        </label>
+                        <label
+                            class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-gray-200 cursor-pointer bg-white hover:border-blue-400 transition-all has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="category" value="visitor" onclick="showSection('visitor')"
+                                class="w-4 h-4 text-blue-600">
+                            <span class="text-xs font-bold text-gray-700 uppercase">Visitor</span>
+                        </label>
+                        <label
+                            class="flex flex-col items-center justify-center gap-2 p-4 rounded-xl border-2 border-gray-200 cursor-pointer bg-white hover:border-blue-400 transition-all has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
+                            <input type="radio" name="category" value="special_athlete"
+                                onclick="showSection('special_athlete')" class="w-4 h-4 text-blue-600">
+                            <span class="text-xs font-bold text-gray-700 uppercase leading-tight text-center">Special
+                                Athlete</span>
+                        </label>
+                    </div>
+
+                    <div id="purposeOfVisitSection" class="hidden fade-in">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Purpose
+                            of Visit</label>
+                        <select name="visit_purpose" id="purposeSelect"
+                            onchange="toggleOther('purposeSelect', 'purposeOther')"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-white font-medium">
+                            <option value="">Select Purpose</option>
+                            <option value="Physiotherapy">Physiotherapy</option>
+                            <option value="Nutrition">Nutrition</option>
+                            <option value="Strength and Conditioning">Strength and Conditioning</option>
+                            <option value="Psychology">Psychology</option>
+                            <option value="Biomechanics">Biomechanics</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <div id="purposeOther" class="hidden mt-3">
+                            <input type="text" name="otherPurpose" placeholder="Please specify your purpose"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl">
+                        </div>
+                    </div>
+
+                    <button type="button" id="btnToSection2"
+                        class="w-full mt-10 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-6 rounded-2xl shadow-xl shadow-blue-200 transition-all active:scale-[0.98]">
+                        Continue to Details
+                    </button>
+                </section>
+
+                <!-- ========== SECTION 2: Comprehensive Details ========== -->
+                <section id="stepSection2" class="form-step hidden fade-in">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2 border-b pb-2">
+                        <span
+                            class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold">2</span>
+                        Personal & Professional Details
+                    </h2>
+
+                    <!-- Basic Shared Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Full
+                                Name</label>
+                            <input required type="text" name="full_name" id="fullName"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                                placeholder="First Last">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Date
+                                of Birth</label>
+                            <input required type="date" name="dob" id="dobInput" onchange="calculateAge()"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                        </div>
+                        <div id="ageDisplayWrap" class="hidden">
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Age</label>
+                            <div id="ageDisplay"
+                                class="px-4 py-3 bg-slate-100 border border-slate-200 rounded-xl font-bold text-slate-600">
+                                —</div>
+                        </div>
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Gender</label>
+                            <select name="gender"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Blood
+                                Group</label>
+                            <select name="blood_group"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl font-medium">
+                                <option value="">Select</option>
+                                <option value="A+">A+</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B-">B-</option>
+                                <option value="O+">O+</option>
+                                <option value="O-">O-</option>
+                                <option value="AB+">AB+</option>
+                                <option value="AB-">AB-</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Phone
+                                Number</label>
+                            <input required type="tel" name="phone" id="phone" maxlength="10"
+                                placeholder="10-digit Mobile"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl font-medium">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Email</label>
+                            <input required type="email" name="email" id="email" placeholder="name@email.com"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl font-medium">
+                        </div>
+                        <div id="aadhaarField" class="md:col-span-2 hidden">
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Aadhaar
+                                Number</label>
+                            <input type="text" name="aadhaar_number" id="aadhaarInput" maxlength="12"
+                                placeholder="12-digit UID"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl font-medium">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Residential
+                                Address</label>
+                            <textarea name="address" rows="2"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl font-medium"
+                                placeholder="Street, Landmark..."></textarea>
+                        </div>
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Postal
+                                Code</label>
+                            <input type="text" name="postal_code" maxlength="6"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl font-medium">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">State
+                                / City</label>
+                            <div class="flex gap-2">
+                                <input type="text" name="state" placeholder="State"
+                                    class="w-1/2 px-4 py-3 border border-gray-300 rounded-xl font-medium">
+                                <input type="text" name="city" placeholder="City"
+                                    class="w-1/2 px-4 py-3 border border-gray-300 rounded-xl font-medium">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Athlete Specifics -->
+                    <div id="athlete-specific-section" class="hidden space-y-6 pt-6 border-t border-slate-100">
+                        <h3 class="text-sm font-black text-blue-600 uppercase tracking-widest">Sporting Profile</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label
+                                    class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Primary
+                                    Sport</label>
+                                <select name="sport_type" id="sportSelect" class="w-full"></select>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Role/Position</label>
+                                <select name="current_role" id="roleSelect"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl bg-white font-medium"></select>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Performance
+                                    Level</label>
+                                <select name="level"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl font-medium">
+                                    <option value="">Select</option>
+                                    <option value="Club">Club</option>
+                                    <option value="State">State</option>
+                                    <option value="National">National</option>
+                                    <option value="International">International</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <input type="text" name="strong_area_1" placeholder="Strong Area 1"
+                                    class="px-4 py-3 border border-blue-100 bg-blue-50/30 rounded-xl">
+                                <input type="text" name="strong_area_2" placeholder="Strong Area 2"
+                                    class="px-4 py-3 border border-blue-100 bg-blue-50/30 rounded-xl">
+                                <input type="text" name="strong_area_3" placeholder="Strong Area 3"
+                                    class="px-4 py-3 border border-blue-100 bg-blue-50/30 rounded-xl">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Intern Specifics -->
+                    <div id="intern-specific-section" class="hidden space-y-6 pt-6 border-t border-slate-100">
+                        <h3 class="text-sm font-black text-amber-600 uppercase tracking-widest">Academic & Coordinator
+                            Info</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <input type="text" name="college" placeholder="College / University Name"
+                                class="md:col-span-2 px-4 py-3 border border-gray-300 rounded-xl">
+                            <input type="text" name="course_type" placeholder="Course Type (e.g. MPT, BPT)"
+                                class="px-4 py-3 border border-gray-300 rounded-xl">
+                            <input type="text" name="degree_year" placeholder="Degree Year"
+                                class="px-4 py-3 border border-gray-300 rounded-xl">
+                            <div class="md:col-span-2 p-5 bg-slate-50 rounded-2xl border border-slate-200">
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">
+                                    Internship Coordinator</p>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <input type="text" name="coord_name" placeholder="Name"
+                                        class="px-4 py-3 border border-white rounded-xl shadow-sm">
+                                    <input type="tel" name="coord_phone" placeholder="Phone"
+                                        class="px-4 py-3 border border-white rounded-xl shadow-sm">
+                                    <input type="email" name="coord_email" placeholder="Email"
+                                        class="px-4 py-3 border border-white rounded-xl shadow-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visit Slot (for Athletes/Visitors) -->
+                    <div id="slot-section" class="hidden pt-6 border-t border-slate-100">
+                        <h3 class="text-sm font-black text-indigo-600 uppercase tracking-widest mb-4">Appointment
+                            Schedule</h3>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <label
+                                    class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Visit
+                                    Date</label>
+                                <input type="date" name="preferred_date"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl">
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Time
+                                    Slot</label>
+                                <select name="preferred_time_slot"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl font-medium">
+                                    <option value="Morning">Morning (9am-12pm)</option>
+                                    <option value="Afternoon">Afternoon (2pm-5pm)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 mt-10">
+                        <button type="button" id="btnBackToSection1"
+                            class="flex-1 py-4 bg-white text-slate-500 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all uppercase text-xs tracking-widest">Back</button>
+                        <button type="button" id="btnToSection3"
+                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-200 transition-all uppercase text-xs tracking-widest">Preview</button>
+                    </div>
+                </section>
+
+                <!-- ========== SECTION 3: Review ========== -->
+                <section id="stepSection3" class="form-step hidden fade-in">
+                    <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2 border-b pb-2">
+                        <span
+                            class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-bold">3</span>
+                        Verification
+                    </h2>
+                    <div id="formPreview"
+                        class="bg-slate-50 border border-slate-200 rounded-[2rem] p-8 mb-8 space-y-3 text-sm shadow-inner overflow-hidden">
+                    </div>
+                    <div class="flex gap-4">
+                        <button type="button" id="btnBackToSection2"
+                            class="flex-1 py-4 bg-white text-slate-500 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all uppercase text-xs tracking-widest">Edit</button>
+                        <button type="submit" id="submitBtn"
+                            class="flex-1 bg-green-600 hover:bg-green-700 text-white font-black py-4 rounded-2xl shadow-xl shadow-green-200 transition-all uppercase text-xs tracking-widest">Submit</button>
+                    </div>
+                </section>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const sportRoles = {
+            "Cricket": ["Batsman", "Bowler", "All-rounder", "Wicket-keeper"],
+            "Football": ["Goalkeeper", "Defender", "Midfielder", "Forward"],
+            "Swimming": ["Freestyle", "Backstroke", "Breaststroke", "Butterfly"],
+            "Badminton": ["Singles", "Doubles", "Mixed"]
+        };
+
+        let sportChoices;
+
+        function initSports() {
+            const el = document.getElementById('sportSelect');
+            const sports = Object.keys(sportRoles);
+            el.innerHTML = '<option value="">Select Sport...</option>' + sports.map(s => `<option value="${s}">${s}</option>`).join('');
+            sportChoices = new Choices(el, { searchEnabled: true, itemSelectText: '' });
+
+            el.addEventListener('change', (e) => {
+                const roles = sportRoles[e.detail.value] || [];
+                const roleEl = document.getElementById('roleSelect');
+                roleEl.innerHTML = '<option value="">Select Role...</option>' + roles.map(r => `<option value="${r}">${r}</option>`).join('');
+            });
+        }
+
+        function calculateAge() {
+            const dob = document.getElementById('dobInput').value;
+            if (!dob) return;
+            const diff = Date.now() - new Date(dob).getTime();
+            const ageDate = new Date(diff);
+            const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+            document.getElementById('ageDisplay').innerText = age + " Years";
+        }
+
+        function toggleOther(sid, oid) {
+            const val = document.getElementById(sid).value;
+            document.getElementById(oid).classList.toggle('hidden', val !== 'Other');
+        }
+
+        function showSection(type) {
+            document.getElementById('purposeOfVisitSection').classList.toggle('hidden', type === 'intern');
+            document.getElementById('aadhaarField').classList.toggle('hidden', type !== 'intern');
+            document.getElementById('ageDisplayWrap').classList.toggle('hidden', type === 'intern');
+
+            document.getElementById('athlete-specific-section').classList.toggle('hidden', !['athlete', 'special_athlete'].includes(type));
+            document.getElementById('intern-specific-section').classList.toggle('hidden', type !== 'intern');
+            document.getElementById('slot-section').classList.toggle('hidden', type === 'intern');
+        }
+
+        document.getElementById('btnToSection2').addEventListener('click', () => {
+            if (!document.querySelector('input[name="category"]:checked')) return alert('Please select a registration type.');
+            document.getElementById('stepSection1').classList.add('hidden');
+            document.getElementById('stepSection2').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        document.getElementById('btnBackToSection1').addEventListener('click', () => {
+            document.getElementById('stepSection2').classList.add('hidden');
+            document.getElementById('stepSection1').classList.remove('hidden');
+        });
+
+        document.getElementById('btnToSection3').addEventListener('click', () => {
+            const form = document.getElementById('registrationForm');
+            const data = new FormData(form);
+            let html = '<div class="space-y-4">';
+            const exclude = ['category', 'otherPurpose', 'otherSport'];
+
+            for (let [key, value] of data.entries()) {
+                if (value && !exclude.includes(key)) {
+                    const label = key.replace(/_/g, ' ').toUpperCase();
+                    html += `<div class="flex justify-between border-b border-slate-200 pb-2"><span class="text-slate-400 font-bold text-[9px] tracking-widest">${label}</span><span class="text-slate-800 font-bold">${value}</span></div>`;
+                }
+            }
+            html += '</div>';
+            document.getElementById('formPreview').innerHTML = html;
+            document.getElementById('stepSection2').classList.add('hidden');
+            document.getElementById('stepSection3').classList.remove('hidden');
+        });
+
+        document.getElementById('btnBackToSection2').addEventListener('click', () => {
+            document.getElementById('stepSection3').classList.add('hidden');
+            document.getElementById('stepSection2').classList.remove('hidden');
+        });
+
+        function fillMockData() {
+            const rad = document.querySelector('input[value="athlete"]');
+            rad.checked = true; showSection('athlete');
+
+            document.getElementById('fullName').value = "Karan Nair";
+            document.getElementById('dobInput').value = "1998-05-15";
+            calculateAge();
+            document.getElementById('phone').value = "9876543210";
+            document.getElementById('email').value = "karan.nair@email.com";
+            document.getElementsByName('address')[0].value = "123 Stadium Road, Jayanagar";
+            document.getElementsByName('postal_code')[0].value = "560041";
+            document.getElementsByName('state')[0].value = "Karnataka";
+            document.getElementsByName('city')[0].value = "Bangalore";
+
+            alert("Sample data loaded. Proceed to next sections.");
+        }
+
+        document.getElementById('registrationForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = "Processing...";
+
+            const formData = new FormData(e.target);
+
+            fetch('submit_data.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('successBanner').classList.remove('hidden');
+                    document.getElementById('successBanner').innerText = "Registration submitted successfully (" + data.message + ").";
+                    btn.innerText = "Completed";
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    alert('Error: ' + data.message);
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Submission failed. Please check your connection.');
+                btn.disabled = false;
+                btn.innerText = originalText;
+            });
+        });
+
+        window.onload = initSports;
+    </script>
+</body>
+
+</html>

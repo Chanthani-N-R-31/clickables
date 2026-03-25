@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Scheduler – Central Scheduler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar-transition {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .fc-theme-standard td,
+        .fc-theme-standard th {
+            border-color: #f1f5f9;
+        }
+
+        .fc .fc-button-primary {
+            background: #005af5;
+            border: none;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .fc .fc-toolbar-title {
+            font-size: 1.1rem !important;
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .fc-event {
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 2px 4px;
+            font-weight: 600;
+        }
+
+        .animate-in {
+            animation: slideUp 0.3s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .slot-btn {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .slot-btn.selected {
+            border: 2px solid #005af5;
+            background: #f0f7ff;
+            color: #005af5;
+        }
+
+        .slot-btn.disabled {
+            opacity: 0.3;
+            background: #f8fafc;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 640px) {
+            .fc-header-toolbar {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-[#f8fafc] text-[#1e293b] antialiased flex h-screen overflow-hidden relative">
+
+    <!-- Global Navigation -->
+    <div class="fixed bottom-6 right-6 flex gap-3 z-[100]">
+        <button onclick="window.history.back()" class="flex items-center justify-center w-12 h-12 bg-white/90 backdrop-blur-md border border-slate-200 rounded-full shadow-lg hover:bg-white transition-all active:scale-95 group">
+            <i class="ph ph-arrow-left text-xl text-slate-600 group-hover:text-blue-600"></i>
+        </button>
+        <a href="IT.drawio (1).html" class="flex items-center justify-center w-12 h-12 bg-blue-600 border border-blue-500 rounded-full shadow-lg hover:bg-blue-700 transition-all active:scale-95 group">
+            <i class="ph ph-house text-xl text-white"></i>
+        </a>
+    </div>
+
+    <!-- Sidebar Backdrop -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] hidden transition-opacity duration-300 opacity-0"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-white border-r border-slate-200 z-[70] transform -translate-x-full lg:relative lg:translate-x-0 sidebar-transition flex flex-col shadow-2xl lg:shadow-none">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                    <i class="ph ph-calendar-bold text-xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold tracking-tight text-slate-900">Sports Science</h2>
+                    <p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider">Master Scheduler</p>
+                </div>
+            </div>
+            <button id="close-sidebar" class="lg:hidden p-2 text-slate-400 hover:text-slate-600 transition-colors">
+                <i class="ph ph-x text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-8 flex-1 overflow-y-auto">
+            <div class="space-y-4">
+                <p class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest px-1">View Settings</p>
+                <div class="space-y-3">
+                    <label class="block text-[0.65rem] font-bold text-slate-500 uppercase tracking-widest px-1">Department</label>
+                    <select class="w-full bg-slate-50 border border-slate-200 text-sm font-semibold rounded-xl p-3 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all">
+                        <option>All Departments</option>
+                        <option>Physiotherapy</option>
+                        <option>S & C</option>
+                        <option>Counselling</option>
+                    </select>
+                </div>
+            </div>
+
+            <nav class="space-y-1">
+                <p class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest px-1 mb-4">Navigation</p>
+                <a href="admin_dashboard.html" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all font-semibold text-sm">
+                    <i class="ph ph-layout"></i> Dashboard
+                </a>
+                <a href="admin_attendance.html" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all font-semibold text-sm">
+                    <i class="ph ph-clock"></i> Attendance
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+        <header class="h-20 flex items-center justify-between px-6 md:px-10 bg-white/50 backdrop-blur-md border-b border-slate-200 z-50">
+            <div class="flex items-center gap-4">
+                <button id="toggle-sidebar" class="lg:hidden p-2 bg-white rounded-xl border border-slate-200 shadow-sm text-slate-600">
+                    <i class="ph ph-list text-xl"></i>
+                </button>
+                <h1 class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 tracking-tight">Schedule</h1>
+            </div>
+            <button onclick="toggleModal('bookingModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2.5 rounded-xl text-xs md:text-sm font-bold shadow-lg shadow-blue-200 transition-all flex items-center gap-2 active:scale-95">
+                <i class="ph ph-plus-bold"></i> <span class="hidden sm:inline">New Booking</span>
+            </button>
+        </header>
+
+        <div class="flex-1 flex flex-col p-4 md:p-8 overflow-hidden">
+            <!-- Calendar Container -->
+            <div class="flex-1 bg-white glass-card rounded-[2rem] border border-slate-200/60 shadow-xl shadow-slate-200/40 flex flex-col min-h-0">
+                <div class="flex items-center justify-between p-6 border-b border-slate-100 flex-shrink-0">
+                    <div class="flex gap-4 overflow-x-auto no-scrollbar pb-1">
+                        <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-blue-600"></span><span class="text-[0.65rem] font-black uppercase text-slate-400">Physio</span></span>
+                        <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-emerald-600"></span><span class="text-[0.65rem] font-black uppercase text-slate-400">S&C</span></span>
+                        <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-purple-600"></span><span class="text-[0.65rem] font-black uppercase text-slate-400">Counsel</span></span>
+                    </div>
+                </div>
+                <div id="calendar" class="flex-1 p-4 overflow-y-auto"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Container -->
+    <div id="modal-container" class="fixed inset-0 z-[110] hidden items-center justify-center p-4 sm:p-6 overflow-y-auto">
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeAllModals()"></div>
+
+        <!-- Booking Modal -->
+        <div id="bookingModal" class="relative bg-white border border-slate-200 rounded-[2.5rem] shadow-2xl w-full max-w-xl hidden flex-col overflow-hidden animate-in">
+            <div class="p-8 space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">New Booking</h3>
+                    <button onclick="closeAllModals()" class="p-2 bg-slate-50 text-slate-400 rounded-full hover:text-slate-600 transition-colors"><i class="ph ph-x text-lg"></i></button>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest ml-1">Appointment Date</label>
+                        <div class="relative group">
+                            <i class="ph ph-calendar-blank absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600"></i>
+                            <input type="text" value="24-03-2026" class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest ml-1">Available Slots</label>
+                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                            <button class="slot-btn disabled">09:00</button>
+                            <button class="slot-btn disabled">10:00</button>
+                            <button class="slot-btn selected">11:00</button>
+                            <button class="slot-btn">12:00</button>
+                            <button class="slot-btn">13:00</button>
+                            <button class="slot-btn">14:00</button>
+                            <button class="slot-btn">15:00</button>
+                            <button class="slot-btn">16:00</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest ml-1">Department</label>
+                            <select class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none appearance-none cursor-pointer">
+                                <option>Physiotherapy</option>
+                                <option>S & C</option>
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest ml-1">Specialist</label>
+                            <select class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none appearance-none cursor-pointer">
+                                <option>Dr. John Smith</option>
+                                <option>Anchalsingh</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-6">
+                    <button onclick="closeAllModals()" class="flex-1 py-4 bg-slate-100 text-slate-400 font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-slate-200 transition-all">Cancel</button>
+                    <button onclick="closeAllModals()" class="flex-[2] py-4 bg-blue-600 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all active:scale-[0.98]">Confirm Booking</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        const toggleBtn = document.getElementById('toggle-sidebar');
+        const closeBtn = document.getElementById('close-sidebar');
+
+        function toggleSidebar() {
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('hidden');
+                backdrop.classList.remove('opacity-100');
+            } else {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.remove('hidden');
+                setTimeout(() => backdrop.classList.add('opacity-100'), 10);
+            }
+        }
+
+        toggleBtn.addEventListener('click', toggleSidebar);
+        closeBtn.addEventListener('click', toggleSidebar);
+        backdrop.addEventListener('click', toggleSidebar);
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.add('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+            }
+        });
+
+        function toggleModal(id) {
+            document.getElementById('modal-container').classList.remove('hidden');
+            document.getElementById('modal-container').classList.add('flex');
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById(id).classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAllModals() {
+            document.getElementById('modal-container').classList.add('hidden');
+            document.getElementById('modal-container').classList.remove('flex');
+            document.getElementById('bookingModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek',
+                headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
+                slotMinTime: '09:00:00',
+                slotMaxTime: '21:00:00',
+                height: 'auto',
+                allDaySlot: false,
+                slotDuration: '00:30:00',
+                nowIndicator: true,
+                events: [
+                    { title: 'Karan Nair', start: '2026-03-23T11:55:00', end: '2026-03-23T12:25:00', backgroundColor: '#2563eb' },
+                    { title: 'Amit Sharma', start: '2026-03-24T14:20:00', end: '2026-03-24T14:50:00', backgroundColor: '#059669' }
+                ]
+            });
+            calendar.render();
+            
+            window.addEventListener('resize', () => {
+                calendar.changeView(window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek');
+            });
+        });
+    </script>
+</body>
+
+</html>

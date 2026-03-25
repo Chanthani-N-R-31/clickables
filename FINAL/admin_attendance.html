@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Attendance - CSS Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.294.0?external=react",
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+        "firebase/firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"
+      }
+    }
+    </script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    </style>
+
+</head>
+
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Global Navigation -->
+    <div class="fixed bottom-6 right-6 flex gap-4 z-[9999]">
+        <button onclick="window.history.back()" class="flex items-center justify-center w-12 h-12 bg-white/80 backdrop-blur-md border border-slate-200 rounded-full shadow-lg hover:bg-white transition-all active:scale-95 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-slate-600 group-hover:text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </button>
+        <a href="IT.drawio (1).html" class="flex items-center justify-center w-12 h-12 bg-blue-600 border border-blue-500 rounded-full shadow-lg hover:bg-blue-700 transition-all active:scale-95 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+        </a>
+    </div>
+
+    <div id="root"></div>
+
+    <script>
+        // Mock global variables to prevent reference errors if directly opened as HTML
+        window.__firebase_config = '{}';
+        window.__app_id = 'attendance-portal';
+        window.__initial_auth_token = '';
+    </script>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useMemo } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import {
+            MapPin,
+            Clock,
+            Play,
+            CheckCircle,
+            LogOut,
+            ArrowLeft,
+            Menu,
+            ChevronRight,
+            Building,
+            Briefcase,
+            AlertCircle,
+            Calendar,
+            X,
+            FileText
+        } from 'lucide-react';
+        import { initializeApp } from 'firebase/app';
+        import {
+            getFirestore,
+            doc,
+            setDoc,
+            getDoc,
+            collection,
+            onSnapshot,
+            query,
+            addDoc,
+            updateDoc,
+            serverTimestamp,
+            orderBy
+        } from 'firebase/firestore';
+        import {
+            getAuth,
+            signInAnonymously,
+            signInWithCustomToken,
+            onAuthStateChanged
+        } from 'firebase/auth';
+
+        // --- Firebase Configuration ---
+        const firebaseConfigStr = typeof __firebase_config !== 'undefined' ? __firebase_config : window.__firebase_config;
+        const firebaseConfig = firebaseConfigStr && firebaseConfigStr !== '{}'
+            ? JSON.parse(firebaseConfigStr)
+            : { apiKey: "mock-key", authDomain: "mock.firebaseapp.com", projectId: "mock" };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : (window.__app_id || 'attendance-portal');
+
+        const App = () => {
+            const [user, setUser] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [attendanceData, setAttendanceData] = useState(null);
+            const [logs, setLogs] = useState([]);
+            const [message, setMessage] = useState({ text: '', isError: false });
+
+            // UI States
+            const [startType, setStartType] = useState(''); // 'in_office' | 'out_of_office'
+            const [inOfficeLocation, setInOfficeLocation] = useState('');
+            const [otherLocationText, setOtherLocationText] = useState('');
+            const [fieldLocation, setFieldLocation] = useState('');
+            const [fieldReason, setFieldReason] = useState('');
+            const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+            const [activeAction, setActiveAction] = useState(null); // 'switching_out' | 'switching_in' | 'applying_leave'
+
+            const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
+
+            // --- Auth Logic ---
+            useEffect(() => {
+                const initAuth = async () => {
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (err) {
+                        console.error("Auth failed:", err);
+                    }
+                };
+                initAuth();
+                const unsubscribe = onAuthStateChanged(auth, (u) => {
+                    setUser(u);
+                    setLoading(false);
+                });
+                return () => unsubscribe();
+            }, []);
+
+            // --- Data Fetching ---
+            useEffect(() => {
+                if (!user) return;
+
+                const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'attendance', todayStr);
+                const logsRef = collection(db, 'artifacts', appId, 'users', user.uid, 'attendance', todayStr, 'logs');
+
+                // Sync Main Record
+                const unsubDoc = onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        setAttendanceData(docSnap.data());
+                    } else {
+                        setAttendanceData(null);
+                    }
+                }, (err) => showMessage("Failed to sync status", true));
+
+                // Sync Logs
+                const unsubLogs = onSnapshot(logsRef, (snap) => {
+                    const logItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    // Sort in memory as per Rule 2
+                    const sorted = logItems.sort((a, b) => b.logged_at?.seconds - a.logged_at?.seconds);
+                    setLogs(sorted);
+                }, (err) => showMessage("Failed to sync logs", true));
+
+                return () => {
+                    unsubDoc();
+                    unsubLogs();
+                };
+            }, [user, todayStr]);
+
+            const showMessage = (text, isError = false) => {
+                setMessage({ text, isError });
+                setTimeout(() => setMessage({ text: '', isError: false }), 5000);
+            };
+
+            // --- Actions ---
+
+            const logActivity = async (action, location = '', reason = '') => {
+                const logsRef = collection(db, 'artifacts', appId, 'users', user.uid, 'attendance', todayStr, 'logs');
+                await addDoc(logsRef, {
+                    action,
+                    location,
+                    reason,
+                    logged_at: serverTimestamp()
+                });
+            };
+
+            const handleStartRecording = async () => {
+                if (!user) return;
+
+                let finalLocation = '';
+                let finalReason = '';
+
+                if (startType === 'in_office') {
+                    if (!inOfficeLocation) return showMessage("Please select a location", true);
+                    finalLocation = inOfficeLocation === 'Others' ? otherLocationText : inOfficeLocation;
+                    if (inOfficeLocation === 'Others' && !otherLocationText) return showMessage("Please specify location", true);
+                } else {
+                    if (!fieldLocation || !fieldReason) return showMessage("Location and Reason are required", true);
+                    finalLocation = fieldLocation;
+                    finalReason = fieldReason;
+                }
+
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'attendance', todayStr);
+                    const data = {
+                        user_id: user.uid,
+                        role: 'Admin',
+                        attendance_date: todayStr,
+                        start_ts: serverTimestamp(),
+                        end_ts: null,
+                        status: 'Present',
+                        start_type: startType,
+                        location: finalLocation,
+                        reason: finalReason,
+                        created_at: serverTimestamp()
+                    };
+
+                    await setDoc(docRef, data);
+                    await logActivity(`start_${startType}`, finalLocation, finalReason);
+                    showMessage("Shift started successfully!");
+                    setStartType('');
+                } catch (err) {
+                    showMessage("Failed to save data", true);
+                }
+            };
+
+            const handleSwitchStatus = async (toType) => {
+                if (!user || !attendanceData) return;
+
+                let finalLocation = '';
+                let finalReason = '';
+
+                if (toType === 'out_of_office') {
+                    if (!fieldLocation || !fieldReason) return showMessage("Location and Reason are required", true);
+                    finalLocation = fieldLocation;
+                    finalReason = fieldReason;
+                } else {
+                    if (!inOfficeLocation) return showMessage("Please select a location", true);
+                    finalLocation = inOfficeLocation === 'Others' ? otherLocationText : inOfficeLocation;
+                }
+
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'attendance', todayStr);
+                    await updateDoc(docRef, {
+                        start_type: toType,
+                        location: finalLocation,
+                        reason: finalReason
+                    });
+                    await logActivity(`switch_${toType}`, finalLocation, finalReason);
+                    showMessage(`Switched to ${toType.replace('_', ' ')}`);
+                    setActiveAction(null);
+                    setFieldLocation('');
+                    setFieldReason('');
+                } catch (err) {
+                    showMessage("Update failed", true);
+                }
+            };
+
+            const handleEndOfDay = async () => {
+                if (!window.confirm("Are you sure you want to end your workday?")) return;
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'attendance', todayStr);
+                    await updateDoc(docRef, { end_ts: serverTimestamp() });
+                    await logActivity('end_of_day');
+                    showMessage("Workday completed!");
+                } catch (err) {
+                    showMessage("Failed to end shift", true);
+                }
+            };
+
+            if (loading) return (
+                <div className="h-screen w-full flex items-center justify-center bg-slate-50">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+            );
+
+            const isCompleted = !!attendanceData?.end_ts;
+            const currentStatus = attendanceData?.start_type || null;
+
+            return (
+                <div
+                    className="min-h-screen bg-gradient-to-br from-[#f4f8fb] via-[#edf3f8] to-[#e0eaf5] text-slate-800 font-sans selection:bg-blue-100 flex overflow-hidden relative">
+
+                    {/* Background Blobs */}
+                    <div
+                        className="fixed top-[-5%] left-[-5%] w-[50vw] h-[50vw] rounded-full bg-blue-600/10 blur-[100px] pointer-events-none z-0">
+                    </div>
+                    <div
+                        className="fixed bottom-[-10%] right-[-5%] w-[45vw] h-[45vw] rounded-full bg-purple-600/5 blur-[120px] pointer-events-none z-0">
+                    </div>
+
+                    {/* Sidebar Overlay */}
+                    {isSidebarOpen && (
+                        <div className="fixed inset-0 bg-black/40 z-40 md:hidden backdrop-blur-sm transition-opacity" onClick={() =>
+                            setIsSidebarOpen(false)}
+                        />
+                    )}
+
+                    {/* Mock Sidebar */}
+                    <aside className={`fixed md:relative z-50 w-72 h-screen bg-white/80 backdrop-blur-xl border-r border-slate-100
+            flex flex-col transition-transform duration-300 md:translate-x-0 ${isSidebarOpen ? 'translate-x-0'
+                            : '-translate-x-full'}`}>
+                        <div className="p-8">
+                            <div className="flex items-center gap-3 mb-10">
+                                <div
+                                    className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                                    <Building size={20} />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-black tracking-tighter">CSS PLATFORM</h2>
+                                    <p className="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Front Desk v2.5
+                                    </p>
+                                </div>
+                            </div>
+
+                            <nav className="space-y-2">
+                                {[
+                                    { label: 'Dashboard', icon: Calendar, active: false },
+                                    { label: 'My Attendance', icon: CheckCircle, active: true },
+                                    { label: 'Team Status', icon: Briefcase, active: false },
+                                    { label: 'Leaves', icon: FileText, active: false },
+                                ].map((item, idx) => (
+                                    <button key={idx} className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-xs
+                        font-black uppercase tracking-widest transition-all ${item.active
+                                            ? 'bg-blue-600 text-white shadow-xl shadow-blue-200'
+                                            : 'text-slate-400 hover:bg-slate-50 hover:text-slate-600'}`}>
+                                        <item.icon size={18} strokeWidth={item.active ? 3 : 2} />
+                                        {item.label}
+                                    </button>
+                                ))}
+                            </nav>
+                        </div>
+                    </aside>
+
+                    {/* Main Content */}
+                    <main className="flex-1 flex flex-col h-screen overflow-hidden relative z-10 bg-white/30 backdrop-blur-sm">
+
+                        {/* Header */}
+                        <header className="px-6 py-6 md:px-10 flex justify-between items-center bg-transparent">
+                            <div className="flex items-center gap-4">
+                                <button onClick={() => setIsSidebarOpen(true)} className="md:hidden p-2 text-slate-500 bg-white
+                        rounded-xl border border-slate-100 shadow-sm">
+                                    <Menu size={20} />
+                                </button>
+                                <div>
+                                    <h1 className="text-2xl font-black text-slate-800 tracking-tight leading-none">My Attendance
+                                    </h1>
+                                    <p className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-[0.2em] mt-2">Front
+                                        Desk Operations</p>
+                                </div>
+                            </div>
+                            <button
+                                className="hidden sm:flex items-center gap-2 px-6 py-3 bg-white hover:bg-slate-50 border border-slate-100 rounded-xl text-[0.65rem] font-black uppercase tracking-widest text-blue-600 shadow-sm transition-all">
+                                <ArrowLeft size={14} strokeWidth={3} />
+                                Back to Home
+                            </button>
+                        </header>
+
+                        <div className="flex-1 overflow-y-auto px-6 pb-10 md:px-10 custom-scrollbar">
+                            <div className="max-w-6xl mx-auto space-y-8 pt-4">
+
+                                {/* Notification Toast Replacement */}
+                                {message.text && (
+                                    <div className={`p-4 rounded-2xl flex items-center gap-3 animate-bounce shadow-lg border
+                        ${message.isError ? 'bg-red-50 border-red-100 text-red-600'
+                                            : 'bg-emerald-50 border-emerald-100 text-emerald-600'}`}>
+                                        {message.isError ?
+                                            <AlertCircle size={18} /> :
+                                            <CheckCircle size={18} />}
+                                        <p className="text-xs font-black uppercase tracking-widest">{message.text}</p>
+                                    </div>
+                                )}
+
+                                {/* Date / Status Bar */}
+                                <div
+                                    className="bg-white/80 backdrop-blur-2xl border border-white p-6 md:p-8 rounded-[2.5rem] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6 group">
+                                    <div className="flex items-center gap-5">
+                                        <div
+                                            className="w-14 h-14 bg-blue-50 text-blue-600 rounded-[1.25rem] flex items-center justify-center shadow-inner">
+                                            <Calendar size={28} strokeWidth={2.5} />
+                                        </div>
+                                        <div>
+                                            <p className="text-[0.6rem] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">
+                                                Current Session</p>
+                                            <p className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">
+                                                {new Date().toLocaleDateString('en-US', {
+                                                    weekday: 'long', month: 'long', day:
+                                                        'numeric', year: 'numeric'
+                                                })}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3">
+                                        <span className={`px-5 py-2 rounded-full text-[0.65rem] font-black uppercase tracking-widest
+                                border ${isCompleted ? 'bg-slate-100 text-slate-500 border-slate-200' : attendanceData
+                                                ? 'bg-emerald-50 text-emerald-600 border-emerald-100 animate-pulse'
+                                                : 'bg-blue-50 text-blue-600 border-blue-100'}`}>
+                                            {isCompleted ? 'Completed' : (attendanceData ? 'Online' : 'Pending Start')}
+                                        </span>
+                                        {attendanceData && !isCompleted && (
+                                            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+                                    {/* Left Column: Actions */}
+                                    <div className="lg:col-span-7 space-y-8">
+
+                                        {!attendanceData ? (
+                                            /* START OF DAY UI */
+                                            <section
+                                                className="bg-white/95 backdrop-blur-2xl border border-white rounded-[2.5rem] shadow-xl shadow-slate-200/50 p-8 md:p-10 animate-in translate-y-4 opacity-0 [animation-fill-mode:forwards]">
+                                                <div className="flex items-center gap-4 mb-8">
+                                                    <div
+                                                        className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center">
+                                                        <Play size={24} fill="currentColor" />
+                                                    </div>
+                                                    <div>
+                                                        <h2 className="text-xl font-black text-slate-800">Start Your Day</h2>
+                                                        <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
+                                                            Select your initial mode</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-8">
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <button onClick={() => setStartType('in_office')}
+                                                            className={`flex flex-col items-center gap-4 p-6 rounded-3xl border-2 transition-all ${startType === 'in_office' ? 'bg-emerald-50 border-emerald-400 text-emerald-700' : 'bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-200'}`}
+                                                        >
+                                                            <Building size={32} />
+                                                            <span className="text-[0.65rem] font-black uppercase tracking-widest">In
+                                                                Office</span>
+                                                        </button>
+                                                        <button onClick={() => setStartType('out_of_office')}
+                                                            className={`flex flex-col items-center gap-4 p-6 rounded-3xl border-2 transition-all ${startType === 'out_of_office' ? 'bg-amber-50 border-amber-400 text-amber-700' : 'bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-200'}`}
+                                                        >
+                                                            <MapPin size={32} />
+                                                            <span className="text-[0.65rem] font-black uppercase tracking-widest">Field
+                                                                Visit</span>
+                                                        </button>
+                                                    </div>
+
+                                                    {startType === 'in_office' && (
+                                                        <div className="space-y-4 animate-in">
+                                                            <label
+                                                                className="text-[0.6rem] font-black uppercase tracking-widest text-slate-400 ml-1">Workstation
+                                                                Location</label>
+                                                            <select value={inOfficeLocation} onChange={(e) =>
+                                                                setInOfficeLocation(e.target.value)}
+                                                                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6
+                                            font-semibold text-sm outline-none focus:ring-2 focus:ring-blue-500
+                                            appearance-none transition-all"
+                                                            >
+                                                                <option value="">— Select Location —</option>
+                                                                <option value="CSS Kanteerva">CSS Kanteerva</option>
+                                                                <option value="Others">Others</option>
+                                                            </select>
+                                                            {inOfficeLocation === 'Others' && (
+                                                                <input type="text" placeholder="Specify your location..."
+                                                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 font-semibold text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                                                                    value={otherLocationText} onChange={(e) =>
+                                                                        setOtherLocationText(e.target.value)}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    )}
+
+                                                    {startType === 'out_of_office' && (
+                                                        <div className="space-y-5 animate-in">
+                                                            <div className="space-y-2">
+                                                                <label
+                                                                    className="text-[0.6rem] font-black uppercase tracking-widest text-slate-400 ml-1">Field
+                                                                    Location</label>
+                                                                <input type="text" placeholder="e.g. Rural Camp A"
+                                                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 font-semibold text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                                                                    value={fieldLocation} onChange={(e) => setFieldLocation(e.target.value)}
+                                                                />
+                                                            </div>
+                                                            <div className="space-y-2">
+                                                                <label
+                                                                    className="text-[0.6rem] font-black uppercase tracking-widest text-slate-400 ml-1">Purpose
+                                                                    / Reason</label>
+                                                                <textarea rows="3" placeholder="Brief description of the visit..."
+                                                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 font-semibold text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all resize-none"
+                                                                    value={fieldReason} onChange={(e) => setFieldReason(e.target.value)}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {startType && (
+                                                        <button
+                                                            onClick={handleStartRecording}
+                                                            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-5 rounded-3xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-200 transition-all active:scale-[0.98]"
+                                                        >
+                                                            Confirm & Start Session
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </section>
+                                        ) : isCompleted ? (
+                                            /* WORKDAY FINISHED UI */
+                                            <section className="bg-emerald-50/80 backdrop-blur-2xl border border-emerald-100 rounded-[2.5rem] p-10 text-center shadow-sm animate-in">
+                                                <div className="w-20 h-20 bg-emerald-500 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-200">
+                                                    <CheckCircle size={40} />
+                                                </div>
+                                                <h3 className="text-2xl font-black text-emerald-900 mb-2">Workday Finalized</h3>
+                                                <p className="text-sm font-bold text-emerald-600 uppercase tracking-widest">Successfully clocked out for today</p>
+                                            </section>
+                                        ) : (
+                                            /* ONGOING SESSION ACTIONS */
+                                            <section className="bg-white/95 backdrop-blur-2xl border border-white rounded-[2.5rem] shadow-sm p-8 md:p-10 space-y-8 animate-in">
+                                                <div>
+                                                    <h2 className="text-2xl font-black text-slate-800 tracking-tight">Shift Operations</h2>
+                                                    <p className="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest mt-1">Manage your current active session</p>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                    {currentStatus === 'in_office' ? (
+                                                        <button
+                                                            onClick={() => setActiveAction(activeAction === 'switching_out' ? null : 'switching_out')}
+                                                            className="flex items-center justify-center gap-3 p-6 rounded-3xl border-2 border-amber-100 bg-amber-50 text-amber-700 hover:bg-amber-100 transition-all group"
+                                                        >
+                                                            <MapPin size={20} className="group-hover:scale-110 transition-transform" />
+                                                            <span className="text-[0.65rem] font-black uppercase tracking-widest">Go to Field</span>
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            onClick={() => setActiveAction(activeAction === 'switching_in' ? null : 'switching_in')}
+                                                            className="flex items-center justify-center gap-3 p-6 rounded-3xl border-2 border-emerald-100 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all group"
+                                                        >
+                                                            <Building size={20} className="group-hover:scale-110 transition-transform" />
+                                                            <span className="text-[0.65rem] font-black uppercase tracking-widest">Return to Office</span>
+                                                        </button>
+                                                    )}
+
+                                                    <button
+                                                        onClick={handleEndOfDay}
+                                                        className="flex items-center justify-center gap-3 p-6 rounded-3xl border-2 border-slate-100 bg-slate-50 text-slate-500 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all group"
+                                                    >
+                                                        <LogOut size={20} className="group-hover:translate-x-1 transition-transform" />
+                                                        <span className="text-[0.65rem] font-black uppercase tracking-widest">End of Day</span>
+                                                    </button>
+                                                </div>
+
+                                                {/* Conditional Switch UIs */}
+                                                {activeAction === 'switching_out' && (
+                                                    <div className="p-8 bg-amber-50/50 rounded-3xl border border-amber-100 space-y-5 animate-in">
+                                                        <div className="flex justify-between items-center mb-2">
+                                                            <h4 className="text-xs font-black uppercase tracking-widest text-amber-900">Field Visit Details</h4>
+                                                            <button onClick={() => setActiveAction(null)}><X size={16} /></button>
+                                                        </div>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="New Field Location..."
+                                                            className="w-full bg-white border border-amber-200 rounded-2xl py-4 px-6 font-semibold text-sm outline-none focus:ring-2 focus:ring-amber-500"
+                                                            value={fieldLocation}
+                                                            onChange={(e) => setFieldLocation(e.target.value)}
+                                                        />
+                                                        <textarea
+                                                            rows="2"
+                                                            placeholder="Reason for switching..."
+                                                            className="w-full bg-white border border-amber-200 rounded-2xl py-4 px-6 font-semibold text-sm outline-none focus:ring-2 focus:ring-amber-500 resize-none"
+                                                            value={fieldReason}
+                                                            onChange={(e) => setFieldReason(e.target.value)}
+                                                        />
+                                                        <button
+                                                            onClick={() => handleSwitchStatus('out_of_office')}
+                                                            className="w-full bg-amber-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-amber-200"
+                                                        >
+                                                            Confirm Status Update
+                                                        </button>
+                                                    </div>
+                                                )}
+
+                                                {activeAction === 'switching_in' && (
+                                                    <div className="p-8 bg-emerald-50/50 rounded-3xl border border-emerald-100 space-y-5 animate-in">
+                                                        <div className="flex justify-between items-center mb-2">
+                                                            <h4 className="text-xs font-black uppercase tracking-widest text-emerald-900">Office Re-entry</h4>
+                                                            <button onClick={() => setActiveAction(null)}><X size={16} /></button>
+                                                        </div>
+                                                        <select
+                                                            value={inOfficeLocation}
+                                                            onChange={(e) => setInOfficeLocation(e.target.value)}
+                                                            className="w-full bg-white border border-emerald-200 rounded-2xl py-4 px-6 font-semibold text-sm outline-none focus:ring-2 focus:ring-emerald-500 appearance-none"
+                                                        >
+                                                            <option value="">— Select Station —</option>
+                                                            <option value="CSS Kanteerva">CSS Kanteerva</option>
+                                                            <option value="Others">Others</option>
+                                                        </select>
+                                                        <button
+                                                            onClick={() => handleSwitchStatus('in_office')}
+                                                            className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-200"
+                                                        >
+                                                            Confirm Return
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </section>
+                                        )}
+                                    </div>
+
+                                    {/* Right Column: Timeline */}
+                                    <div className="lg:col-span-5">
+                                        <div className="bg-white/70 backdrop-blur-2xl border border-white rounded-[2.5rem] shadow-sm p-8 min-h-[400px] flex flex-col">
+                                            <div className="flex items-center justify-between mb-8">
+                                                <h3 className="text-lg font-black text-slate-800 flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm">
+                                                        <Clock size={18} strokeWidth={2.5} />
+                                                    </div>
+                                                    Activity Log
+                                                </h3>
+                                            </div>
+
+                                            {logs.length === 0 ? (
+                                                <div className="flex-1 flex flex-col items-center justify-center opacity-20 text-center space-y-4 py-20">
+                                                    <Clock size={48} strokeWidth={1} />
+                                                    <p className="text-[0.65rem] font-black uppercase tracking-[0.2em]">No activities logged yet</p>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-6 relative before:absolute before:left-[19px] before:top-4 before:bottom-4 before:w-[2px] before:bg-slate-100">
+                                                    {logs.map((log, idx) => {
+                                                        const isEnd = log.action === 'end_of_day';
+                                                        const timeStr = log.logged_at ? new Date(log.logged_at.seconds * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '...';
+
+                                                        return (
+                                                            <div key={idx} className="relative pl-12 group">
+                                                                <div className={`absolute left-0 top-0.5 w-10 h-10 rounded-full border-4 border-white shadow-md flex items-center justify-center z-10 transition-transform group-hover:scale-110 ${isEnd ? 'bg-red-500 text-white' : 'bg-blue-600 text-white'}`}>
+                                                                    {isEnd ? <CheckCircle size={14} strokeWidth={3} /> : <Clock size={14} strokeWidth={3} />}
+                                                                </div>
+
+                                                                <div className="bg-white/40 border border-slate-100/50 p-4 rounded-2xl group-hover:bg-white transition-colors">
+                                                                    <div className="flex justify-between items-start mb-1">
+                                                                        <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">
+                                                                            {log.action.replace('start_', 'Started: ').replace('switch_', 'Switched to: ').replace('end_of_day', 'Workday Ended').replace('_', ' ')}
+                                                                        </h4>
+                                                                        <span className="text-[0.55rem] font-black text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full ring-1 ring-blue-100">
+                                                                            {timeStr}
+                                                                        </span>
+                                                                    </div>
+
+                                                                    {log.location && (
+                                                                        <p className="text-[0.65rem] font-bold text-slate-400 flex items-center gap-1.5 mt-2">
+                                                                            <MapPin size={10} />
+                                                                            {log.location}
+                                                                        </p>
+                                                                    )}
+
+                                                                    {log.reason && (
+                                                                        <div className="mt-3 p-3 bg-slate-50 rounded-xl text-[0.65rem] font-medium text-slate-500 italic border-l-2 border-blue-200 leading-relaxed">
+                                                                            "{log.reason}"
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+
+                    {/* Global CSS for scrollbars and animations */}
+                    <style dangerouslySetInnerHTML={{
+                        __html: `
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        @keyframes animate-in {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-in {
+          animation: animate-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}} />
+                </div>
+            );
+        };
+        const rootElement = document.getElementById('root');
+        createRoot(rootElement).render(<App />);
+    </script>
+</body>
+
+</html>

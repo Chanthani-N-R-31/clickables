@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+    <title>Multi-Role Workspace | Specialist</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        @supports (padding-top: env(safe-area-inset-top)) {
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+            }
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        .tab-active {
+            background-color: #eff6ff !important;
+            color: #005af5 !important;
+            border-bottom: 2px solid #005af5 !important;
+            font-weight: 800;
+        }
+
+        /* Tan Package Box styling from image */
+        .package-box {
+            background-color: #d8c3b4;
+            border: 1px solid #cbb6a6;
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .sidebar-transition {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-hidden {
+                transform: translateX(-100%);
+            }
+            .sidebar-visible {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gradient-to-br from-[#f4f8fb] via-[#edf3f8] to-[#e0eaf5] text-[#0a192f] antialiased flex h-screen overflow-hidden relative">
+
+    <!-- Decorative background blobs -->
+    <div
+        class="fixed top-[-5%] left-[-5%] w-[50vw] h-[50vw] rounded-full bg-[#005af5] opacity-[0.06] blur-[100px] pointer-events-none z-0">
+    </div>
+    <div
+        class="fixed bottom-[-10%] right-[-5%] w-[45vw] h-[45vw] rounded-full bg-purple-600 opacity-[0.05] blur-[120px] pointer-events-none z-0">
+    </div>
+
+    <!-- Sidebar Backdrop for Mobile -->
+    <div id="sidebar-backdrop" onclick="toggleSidebar()" 
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-[45] hidden md:hidden"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" 
+        class="fixed md:relative w-64 h-full bg-white border-r border-slate-200 shadow-xl z-50 flex flex-col flex-shrink-0 sidebar-transition sidebar-hidden md:sidebar-visible">
+        <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+            <div class="text-xl font-bold tracking-wider flex items-center gap-2 text-[#0a192f]">
+                <span class="text-blue-500 text-2xl font-black italic">S</span>
+                <div>
+                    <p class="font-black text-slate-800 leading-tight text-sm uppercase">Sports Science</p>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Clinical Workspace</p>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-slate-600 p-1">
+                <i class="ph ph-x text-2xl font-bold"></i>
+            </button>
+        </div>
+
+        <nav class="p-4 space-y-2 flex-1 overflow-y-auto text-sm font-medium">
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#005af5] font-black rounded-xl transition shadow-sm border border-blue-100">
+                <i class="ph ph-stethoscope text-lg"></i> Dashboard
+            </a>
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-[#005af5] hover:bg-slate-50 rounded-xl transition">
+                <i class="ph ph-calendar-blank text-lg"></i> Appointments
+            </a>
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-[#005af5] hover:bg-slate-50 rounded-xl transition">
+                <i class="ph ph-clipboard-text text-lg"></i> My Attendance
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-100">
+            <a href="#"
+                class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition text-xs font-black uppercase tracking-widest">
+                <i class="ph ph-sign-out font-bold"></i> Logout
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden relative z-10 w-full">
+        <!-- Header -->
+        <header class="bg-transparent p-4 md:p-6 flex justify-between items-center border-b border-slate-200/50 md:border-none">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-600 bg-white shadow-sm rounded-xl border border-slate-100 active:scale-95 transition-transform">
+                    <i class="ph ph-list text-2xl font-bold"></i>
+                </button>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black text-[#0a192f] tracking-tight leading-none">Clinical Workspace</h1>
+                    <p class="text-[9px] md:text-[10px] font-black text-blue-600 uppercase tracking-widest mt-1">Specialist (HOD)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 md:gap-3">
+                <div class="text-right hidden sm:block">
+                    <p class="text-xs font-black text-[#0a192f]">Dr. Anchalsingh</p>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">S & C Department</p>
+                </div>
+                <div
+                    class="w-10 h-10 rounded-xl bg-blue-600 border-2 border-white shadow-md flex items-center justify-center text-white font-black">
+                    A</div>
+            </div>
+        </header>
+
+        <!-- Tab Bar -->
+        <div class="flex px-4 md:px-8 bg-white/40 border-b border-white/50 backdrop-blur-md overflow-x-auto no-scrollbar">
+            <button onclick="switchTab('specialist')" id="tab-specialist"
+                class="whitespace-nowrap px-6 py-4 text-sm font-bold transition-all border-b-2 border-transparent tab-active">Specialist</button>
+            <button onclick="switchTab('counsellor')" id="tab-counsellor"
+                class="whitespace-nowrap px-6 py-4 text-sm font-bold text-slate-400 transition-all border-b-2 border-transparent">Counsellor</button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 pt-6">
+
+            <!-- Tab Content: Specialist -->
+            <div id="content-specialist" class="space-y-6 md:space-y-8 animate-in fade-in zoom-in duration-200">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                    <div class="glass-card p-5 md:p-6 rounded-2xl flex items-center justify-between shadow-sm border border-white/60">
+                        <div>
+                            <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Today's Queue</p>
+                            <p class="text-2xl md:text-3xl font-black text-[#0a192f] mt-1">04</p>
+                        </div>
+                        <div
+                            class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 text-xl md:text-2xl shadow-inner">
+                            ⏳</div>
+                    </div>
+                    <div class="glass-card p-5 md:p-6 rounded-2xl flex items-center justify-between shadow-sm border border-white/60">
+                        <div>
+                            <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Completed</p>
+                            <p class="text-2xl md:text-3xl font-black text-[#0a192f] mt-1">12</p>
+                        </div>
+                        <div
+                            class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-xl md:text-2xl shadow-inner">
+                            ✅</div>
+                    </div>
+                </div>
+
+                <!-- Specialist Table -->
+                <div class="glass-card rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/80">
+                    <div class="p-5 md:p-8 border-b border-slate-50 bg-white/50">
+                        <h2 class="text-lg md:text-xl font-black text-[#0a192f] tracking-tight">People Allocated to the Department</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[600px]">
+                            <thead>
+                                <tr
+                                    class="text-slate-400 text-[9px] font-black border-b border-slate-100 uppercase tracking-[0.3em] bg-slate-50/50">
+                                    <th class="p-5 md:p-6">Patient Name</th>
+                                    <th class="p-5 md:p-6">Sport / Purpose</th>
+                                    <th class="p-5 md:p-6">Assign Specialist</th>
+                                    <th class="p-5 md:p-6 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50">
+                                <tr class="hover:bg-white/80 transition group">
+                                    <td class="p-5 md:p-6 font-bold text-sm md:text-base text-[#0a192f]">Karan Nair</td>
+                                    <td class="p-5 md:p-6 text-xs md:text-sm text-slate-500">Swimming – S&C Session 3/10</td>
+                                    <td class="p-5 md:p-6">
+                                        <select
+                                            class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-[11px] font-bold outline-none focus:border-blue-500 appearance-none">
+                                            <option>Dr. Anchalsingh</option>
+                                            <option>Dr. John Smith</option>
+                                        </select>
+                                    </td>
+                                    <td class="p-5 md:p-6 text-right">
+                                        <button onclick="toggleModal('notesModal')"
+                                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest shadow-lg shadow-blue-100 transition-all transform active:scale-95">Start
+                                            Session</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Counsellor -->
+            <div id="content-counsellor" class="hidden space-y-6 md:space-y-8 animate-in fade-in zoom-in duration-200">
+                <div class="glass-card rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/80">
+                    <div class="p-5 md:p-8 border-b border-slate-50 bg-white/50">
+                        <h2 class="text-lg md:text-xl font-black text-[#0a192f] tracking-tight">Assigned for Counselling</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[500px]">
+                            <thead>
+                                <tr
+                                    class="text-slate-400 text-[9px] font-black border-b border-slate-100 uppercase tracking-[0.3em] bg-slate-50/50">
+                                    <th class="p-5 md:p-6">Name</th>
+                                    <th class="p-5 md:p-6">Category</th>
+                                    <th class="p-5 md:p-6">Status</th>
+                                    <th class="p-5 md:p-6 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50">
+                                <tr class="hover:bg-white/80 transition group">
+                                    <td class="p-5 md:p-6 font-bold text-sm md:text-base text-[#0a192f]">Rahul Bose</td>
+                                    <td class="p-5 md:p-6 text-slate-500 uppercase text-[9px] md:text-[10px] font-black">Athlete</td>
+                                    <td class="p-5 md:p-6"><span
+                                            class="text-blue-600 font-bold bg-blue-50 px-3 py-1 rounded-full text-[11px]">Pending</span>
+                                    </td>
+                                    <td class="p-5 md:p-6 text-right">
+                                        <button onclick="toggleModal('notesModal')"
+                                            class="bg-[#005af5] hover:bg-blue-700 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-xl font-black text-[9px] md:text-[10px] uppercase tracking-widest shadow-lg shadow-blue-100 transition-all active:scale-95">View
+                                            & Counsel</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+         <!-- Global Navigation (Added for consistency with other files) -->
+        <div class="fixed bottom-6 right-6 flex gap-4 z-[40]">
+            <button onclick="window.history.back()" class="flex items-center justify-center w-12 h-12 bg-white/80 backdrop-blur-md border border-slate-200 rounded-full shadow-lg hover:bg-white transition-all active:scale-95 group">
+                <i class="ph ph-arrow-left text-xl text-slate-600 group-hover:text-blue-600"></i>
+            </button>
+            <a href="IT.drawio (1).html" class="flex items-center justify-center w-12 h-12 bg-blue-600 border border-blue-500 rounded-full shadow-lg hover:bg-blue-700 transition-all active:scale-95 group">
+                <i class="ph ph-house text-xl text-white"></i>
+            </a>
+        </div>
+    </main>
+
+    <!-- Modal Container -->
+    <div id="modal-container" class="fixed inset-0 z-[60] hidden overflow-y-auto">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-[4px]" onclick="closeAllModals()"></div>
+
+        <!-- Counselling Notes Modal -->
+        <div class="flex min-h-full items-center justify-center p-4 sm:p-6">
+            <div id="notesModal"
+                class="relative bg-[#f1f5f9] border border-white rounded-[24px] md:rounded-[32px] shadow-2xl w-full max-w-2xl hidden flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
+                <!-- Modal Header -->
+                <div class="p-6 md:p-10 pb-4 flex justify-between items-start">
+                    <div>
+                        <h3 class="text-2xl md:text-3xl font-black text-[#1e293b] tracking-tight leading-tight">Counselling notes</h3>
+                        <p class="text-slate-500 font-bold text-sm md:text-base mt-1">Karan Nair</p>
+                    </div>
+                    <button onclick="closeAllModals()"
+                        class="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-400 active:scale-90">
+                        <i class="ph ph-x text-2xl font-bold"></i>
+                    </button>
+                </div>
+
+                <div class="p-6 md:p-10 pt-2 space-y-6 overflow-y-auto max-h-[60vh] md:max-h-[70vh]">
+                    <!-- Registration Summary Block -->
+                    <div class="bg-white border border-slate-200 rounded-[20px] md:rounded-[28px] p-6 md:p-8 shadow-sm">
+                        <div class="mb-5 md:mb-6">
+                            <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">REGISTRATION</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 md:gap-y-6 text-[14px] md:text-[15px]">
+                            <div class="flex gap-2">
+                                <span class="text-slate-500 font-medium whitespace-nowrap">Category:</span>
+                                <span class="text-slate-800 font-bold">athlete</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="text-slate-500 font-medium whitespace-nowrap">Sport:</span>
+                                <span class="text-slate-800 font-bold">Swimming</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="text-slate-500 font-medium whitespace-nowrap">Visit purpose:</span>
+                                <span class="text-slate-800 font-bold leading-tight">Strength and Conditioning</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="text-slate-500 font-medium whitespace-nowrap">Referred to:</span>
+                                <span class="text-cyan-500 font-black leading-tight">Strength and Conditioning</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Specialist Entry Card -->
+                    <div class="bg-white border border-slate-200 rounded-[20px] md:rounded-[28px] p-6 md:p-8 shadow-sm space-y-5">
+                        <div class="flex justify-between items-center text-[12px] font-bold text-slate-400">
+                            <span>23 Mar 2026</span>
+                            <span>Anchalsingh</span>
+                        </div>
+
+                        <div class="space-y-1">
+                            <p class="text-cyan-400 font-black text-sm md:text-base">Referred to: Strength and Conditioning</p>
+                            <p class="text-slate-700 text-[14px] md:text-[15px] font-medium leading-relaxed">Aiming for Asian Games - 2026
+                            </p>
+                        </div>
+
+                        <!-- Recommended Package Box -->
+                        <div class="package-box p-5 md:p-6">
+                            <p class="text-[9px] md:text-[10px] font-black text-[#8a7a6e] uppercase tracking-[0.2em] mb-1">RECOMMENDED
+                                PACKAGE</p>
+                            <p class="text-white text-xl md:text-2xl font-black tracking-tight">SNC 3Month</p>
+                        </div>
+
+                        <!-- Clinical Data List -->
+                        <div class="space-y-4 pt-2 text-[14px] md:text-[15px]">
+                            <div class="flex flex-col sm:flex-row sm:gap-3">
+                                <span class="text-slate-400 font-medium w-full sm:w-40 shrink-0">Occupation:</span>
+                                <span class="text-slate-700 font-bold">Professional Athlete</span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row sm:gap-3">
+                                <span class="text-slate-400 font-medium w-full sm:w-40 shrink-0">Target department:</span>
+                                <span class="text-slate-700 font-bold uppercase">snc</span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row sm:gap-3">
+                                <span class="text-slate-400 font-medium w-full sm:w-40 shrink-0">S&C category:</span>
+                                <span class="text-slate-700 font-bold">Performance Assessment</span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row sm:gap-3">
+                                <span class="text-slate-400 font-medium w-full sm:w-40 shrink-0">S&C goals:</span>
+                                <span class="text-slate-700 font-bold">Test and decide</span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row sm:gap-3 items-start">
+                                <span class="text-slate-400 font-medium w-full sm:w-40 shrink-0">Counsellor remarks:</span>
+                                <span class="text-slate-700 font-bold leading-snug">Aiming for Asian Games - 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="p-6 md:p-10 pt-4 pb-10 flex justify-start bg-slate-50/50 border-t border-slate-100">
+                    <button onclick="closeAllModals()"
+                        class="w-full sm:w-auto px-10 py-4 bg-white text-slate-500 font-black rounded-2xl border-2 border-slate-100 hover:bg-slate-50 transition shadow-sm uppercase text-xs tracking-widest active:scale-95">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            
+            if (sidebar.classList.contains('sidebar-hidden')) {
+                sidebar.classList.remove('sidebar-hidden');
+                sidebar.classList.add('sidebar-visible');
+                backdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.remove('sidebar-visible');
+                sidebar.classList.add('sidebar-hidden');
+                backdrop.classList.add('hidden');
+            }
+        }
+
+        function switchTab(role) {
+            document.getElementById('content-specialist').classList.toggle('hidden', role !== 'specialist');
+            document.getElementById('content-counsellor').classList.toggle('hidden', role !== 'counsellor');
+
+            document.getElementById('tab-specialist').classList.toggle('tab-active', role === 'specialist');
+            document.getElementById('tab-counsellor').classList.toggle('tab-active', role === 'counsellor');
+
+            const inactiveClass = 'text-slate-400';
+            document.getElementById('tab-specialist').classList.toggle(inactiveClass, role !== 'specialist');
+            document.getElementById('tab-counsellor').classList.toggle(inactiveClass, role !== 'counsellor');
+            
+            // On mobile, scroll main content to top when switching tabs
+            document.querySelector('.flex-1.overflow-y-auto').scrollTop = 0;
+        }
+
+        function toggleModal(id) {
+            const container = document.getElementById('modal-container');
+            const target = document.getElementById(id);
+            closeAllModals();
+            container.classList.remove('hidden');
+            target.classList.remove('hidden');
+            target.classList.add('flex');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeAllModals() {
+            document.getElementById('modal-container').classList.add('hidden');
+            ['notesModal'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.add('hidden');
+                    el.classList.remove('flex');
+                }
+            });
+            document.body.style.overflow = ''; // Restore scrolling
+        }
+        
+        // Handle window resize to fix sidebar state
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                document.getElementById('sidebar').classList.add('md:sidebar-visible');
+                document.getElementById('sidebar').classList.remove('sidebar-hidden');
+                document.getElementById('sidebar-backdrop').classList.add('hidden');
+            } else {
+                if (!document.getElementById('sidebar').classList.contains('sidebar-visible')) {
+                    document.getElementById('sidebar').classList.add('sidebar-hidden');
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
