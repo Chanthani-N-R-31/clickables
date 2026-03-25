@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Internship Program | Sports Science Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .animate-in {
+            animation: fade-in 0.4s ease-out forwards;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sidebar-item-active {
+            background-color: #e0eafc;
+            color: #005af5;
+            border-radius: 0.75rem;
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .card-container {
+            background: white;
+            border-radius: 1.5rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body class="bg-[#f4f8fb] text-[#0a192f] overflow-hidden antialiased">
+
+    <div class="flex h-screen relative z-10">
+        <!-- Sidebar -->
+        <aside id="sidebar"
+            class="w-72 bg-white border-r border-slate-200 hidden md:flex flex-col flex-shrink-0 relative z-50 transition-all duration-300">
+            <div class="p-8">
+                <div class="text-xl font-bold tracking-tight flex items-center gap-3">
+                    <span class="text-blue-600 text-3xl">⚡</span>
+                    <div class="leading-tight">
+                        <span class="block text-slate-800 font-black tracking-tighter uppercase">Sports Science
+                            Engine</span>
+                    </div>
+                </div>
+                <p class="text-[0.65rem] text-slate-400 mt-6 uppercase font-black tracking-widest">
+                    Logged in as: <span class="text-amber-500 font-bold">Intern</span>
+                </p>
+            </div>
+
+            <nav class="px-4 space-y-2 flex-1 overflow-y-auto">
+                <a href="#"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-500 font-bold text-sm hover:text-blue-600 transition-all group">
+                    <i data-lucide="home" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#"
+                    class="flex items-center gap-3 px-4 py-3 text-slate-500 font-bold text-sm hover:text-blue-600 transition-all group">
+                    <i data-lucide="user-check" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span>My Attendance</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 sidebar-item-active font-bold text-sm group">
+                    <i data-lucide="calendar" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                    <span>Internship Program</span>
+                </a>
+            </nav>
+
+            <div class="p-4 border-t border-slate-100">
+                <button
+                    class="w-full flex items-center justify-center gap-2 py-4 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-xl font-black transition-all text-xs tracking-widest uppercase">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> LOGOUT
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-hidden min-w-0">
+            <!-- Header -->
+            <header class="glass-header z-30 relative p-4 flex justify-between items-center px-8">
+                <div class="flex items-center gap-3">
+                    <button class="md:hidden p-2 text-slate-500"><i data-lucide="menu" class="w-6 h-6"></i></button>
+                    <span class="text-blue-500 text-2xl">⚡</span>
+                    <span class="font-bold text-slate-800 tracking-tight text-sm">Centre for Sports Science</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <!-- Timer (Hidden initially) -->
+                    <div id="timer-container"
+                        class="hidden items-center gap-3 px-6 py-2 bg-slate-900 rounded-full font-mono text-lg font-bold text-yellow-400 shadow-xl border border-slate-700 animate-in">
+                        <i data-lucide="clock" class="w-4 h-4 animate-pulse"></i>
+                        <span id="timer-text">15:00</span>
+                    </div>
+                    <button
+                        class="bg-slate-100 hover:bg-slate-200 text-[#0a192f] border border-slate-200 px-6 py-2.5 rounded-xl font-bold transition-all text-sm flex items-center gap-2">
+                        ← Back to Dashboard
+                    </button>
+                </div>
+            </header>
+
+            <!-- Scrollable Content -->
+            <div id="content-area"
+                class="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar relative z-10 bg-slate-50">
+                <div class="max-w-5xl mx-auto">
+
+                    <!-- Program Overview Header -->
+                    <div id="program-header" class="mb-10 animate-in">
+                        <h1 class="text-3xl font-black text-slate-800 tracking-tight">Internship Program</h1>
+                        <p class="text-slate-500 font-bold text-xs uppercase tracking-widest mt-1">4-week schedule:
+                            Foundations, Assessments, Management, Integration</p>
+                    </div>
+
+                    <!-- Pre-Evaluation Section (Initial View) -->
+                    <div id="pre-eval-card" class="card-container animate-in">
+                        <div class="px-8 py-6 border-b border-slate-100 bg-white">
+                            <h2 class="text-xl font-black text-blue-600">Pre-Evaluation</h2>
+                        </div>
+                        <div class="p-8 bg-white">
+                            <p class="text-slate-600 text-sm mb-6 leading-relaxed">
+                                Complete your pre-internship evaluation before or during the program. You can submit
+                                only once.
+                            </p>
+
+                            <!-- If not started -->
+                            <div id="eval-start-btn-container">
+                                <button onclick="startEvaluation()"
+                                    class="bg-blue-600 text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all flex items-center gap-2">
+                                    Start Evaluation <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+
+                            <!-- If submitted (matches image) -->
+                            <div id="eval-submitted-status" class="hidden">
+                                <div class="flex items-center gap-2 text-green-500 font-bold mb-3">
+                                    <i data-lucide="check" class="w-5 h-5"></i>
+                                    <span>Submitted</span>
+                                </div>
+                                <a href="#" class="text-blue-500 font-bold text-sm hover:underline">View / Review
+                                    pre-evaluation →</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Area -->
+                    <div id="schedule-area" class="space-y-8 animate-in" style="animation-delay: 0.1s;">
+
+                        <!-- Week 1 -->
+                        <div class="card-container">
+                            <div class="px-8 py-6 bg-white border-b border-slate-100">
+                                <h2 class="text-xl font-black text-blue-600">Week 1 - Foundations</h2>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead>
+                                        <tr
+                                            class="bg-slate-50 text-[0.65rem] text-slate-400 uppercase tracking-widest font-black">
+                                            <th class="px-8 py-4 w-24">Day</th>
+                                            <th class="px-8 py-4">Activity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 text-sm font-medium text-slate-700">
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 1</td>
+                                            <td class="px-8 py-5">Orientation to Staff, Physio, Sports Science, Rules
+                                                and regulations</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 2</td>
+                                            <td class="px-8 py-5">Intro to Sports PT, Sports Psychology, SnC</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 3</td>
+                                            <td class="px-8 py-5">Intro to Sports Biomechanics, Physiotherapy Assessment
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 4</td>
+                                            <td class="px-8 py-5">Physiotherapy Assessments with technology - Balance,
+                                                flexibility, kinetisense</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 5</td>
+                                            <td class="px-8 py-5">Psychology evaluation + physiotherapy cont</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 6</td>
+                                            <td class="px-8 py-5">On field Assessment + Mentor Evaluation + Case
+                                                demo/Presentation</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Week 2 -->
+                        <div class="card-container">
+                            <div class="px-8 py-6 bg-white border-b border-slate-100">
+                                <h2 class="text-xl font-black text-blue-600">Week 2 - Assessments</h2>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <tbody class="divide-y divide-slate-100 text-sm font-medium text-slate-700">
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5 w-24">Day 1</td>
+                                            <td class="px-8 py-5">Motion Capture, On field Assessmnet</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 2</td>
+                                            <td class="px-8 py-5">FMS, Isometric Dynamometry, Fundamental SnC Movements
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 3</td>
+                                            <td class="px-8 py-5">Special Tests, Anthropometry, Rep Max tetsing</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 4</td>
+                                            <td class="px-8 py-5">Special tests 2, Isokinetic Dynamometry, on field
+                                                injury management</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 5</td>
+                                            <td class="px-8 py-5">Manual therapy, exercise programming</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 6</td>
+                                            <td class="px-8 py-5">Playing a throwing sport, Discussion on the sport,
+                                                mentor evaluation</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Week 3 -->
+                        <div class="card-container">
+                            <div class="px-8 py-6 bg-white border-b border-slate-100">
+                                <h2 class="text-xl font-black text-blue-600">Week 3 - Management</h2>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <tbody class="divide-y divide-slate-100 text-sm font-medium text-slate-700">
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5 w-24">Day 1</td>
+                                            <td class="px-8 py-5">Adjunct Management strategies, Management framework,
+                                                Strength training</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 2</td>
+                                            <td class="px-8 py-5">Adjunct Management strategies, Load monitoring</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 3</td>
+                                            <td class="px-8 py-5">Testing and Reporting, Improving Mobility, Improving
+                                                speed and agility</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 4</td>
+                                            <td class="px-8 py-5">Improving power, Return to Sport, Psychology devices
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 5</td>
+                                            <td class="px-8 py-5">Research, Bioenergetics, Manual Therapy</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 6</td>
+                                            <td class="px-8 py-5">Playing a track sport, Discussion on the sport, mentor
+                                                evaluation</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Week 4 -->
+                        <div class="card-container">
+                            <div class="px-8 py-6 bg-white border-b border-slate-100">
+                                <h2 class="text-xl font-black text-blue-600">Week 4 - Integration</h2>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <tbody class="divide-y divide-slate-100 text-sm font-medium text-slate-700">
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5 w-24">Day 1</td>
+                                            <td class="px-8 py-5">Coach and parent perspective of athlete, soft skills
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 2</td>
+                                            <td class="px-8 py-5">Data Science, Psychology in physio</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 3</td>
+                                            <td class="px-8 py-5">Case studies - Biomechanics, psychology, physio, SnC
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 4</td>
+                                            <td class="px-8 py-5">Sports Nutrition, Sports Medicine</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 5</td>
+                                            <td class="px-8 py-5">Testing fitness</td>
+                                        </tr>
+                                        <tr class="hover:bg-blue-50/50">
+                                            <td class="px-8 py-5">Day 6</td>
+                                            <td class="px-8 py-5">Mentor evaluation, post internship evaluation,
+                                                certificate distribution, feedback collection</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Evaluation Mode -->
+                    <div id="evaluation-mode" class="hidden animate-in">
+                        <div class="card-container">
+                            <div class="p-10">
+                                <div class="text-center mb-10">
+                                    <div
+                                        class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <i data-lucide="file-question" class="w-10 h-10 text-blue-600"></i>
+                                    </div>
+                                    <h2 class="text-2xl font-black text-slate-800 mb-4 tracking-tight">Pre-Evaluation
+                                        Assessment</h2>
+                                    <p class="text-slate-500 font-medium max-w-md mx-auto">Please answer all questions
+                                        carefully. The timer is running. Do not refresh this page.</p>
+                                </div>
+
+                                <div class="space-y-8 text-left max-w-2xl mx-auto">
+                                    <!-- Question 1 -->
+                                    <div class="p-8 bg-slate-50 rounded-2xl border border-slate-100">
+                                        <p class="font-bold text-slate-800 mb-6">1. Which of the following is a primary
+                                            objective of Sports Physiotherapy?</p>
+                                        <div class="space-y-3">
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q1" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Injury prevention and
+                                                    rehabilitation</span>
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q1" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">General fitness training
+                                                    for sedentary adults</span>
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q1" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Surgical intervention for
+                                                    bone fractures</span>
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q1" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Nutrition planning and
+                                                    calorie counting</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Question 2 -->
+                                    <div class="p-8 bg-slate-50 rounded-2xl border border-slate-100">
+                                        <p class="font-bold text-slate-800 mb-6">2. What does FMS stand for in the
+                                            context of sports assessments?</p>
+                                        <div class="space-y-3">
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q2" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Fast Muscle
+                                                    Stimulation</span>
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q2" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Functional Movement
+                                                    Screen</span>
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q2" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Flexibility Measurement
+                                                    System</span>
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q2" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Force Multiplier
+                                                    Study</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Question 3 -->
+                                    <div class="p-8 bg-slate-50 rounded-2xl border border-slate-100">
+                                        <p class="font-bold text-slate-800 mb-6">3. Which technology is primarily used
+                                            for balance and flexibility assessments in this program?</p>
+                                        <div class="space-y-3">
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q3" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Kinetisense</span>
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q3" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">MRI Scanning</span>
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q3" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Pulse Oximeter</span>
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q3" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Standard Goniometer
+                                                    only</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Question 4 -->
+                                    <div class="p-8 bg-slate-50 rounded-2xl border border-slate-100">
+                                        <p class="font-bold text-slate-800 mb-6">4. On which day of the internship
+                                            program is the Final Assessment unlocked?</p>
+                                        <div class="space-y-3">
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q4" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Day 1</span>
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q4" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Day 7</span>
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q4" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Day 24</span>
+                                            </label>
+                                            <label
+                                                class="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
+                                                <input type="radio" name="q4" class="w-4 h-4 text-blue-600">
+                                                <span class="font-bold text-sm text-slate-700">Day 30</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-center">
+                                    <button onclick="finishEvaluation()"
+                                        class="mt-10 bg-slate-900 text-white px-10 py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all">
+                                        Submit Assessment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        let timer;
+        let timeLeft = 15 * 60; // 15 minutes in seconds
+
+        function startEvaluation() {
+            // Hide overview components
+            document.getElementById('program-header').classList.add('hidden');
+            document.getElementById('pre-eval-card').classList.add('hidden');
+            document.getElementById('schedule-area').classList.add('hidden');
+
+            // Show evaluation view
+            document.getElementById('evaluation-mode').classList.remove('hidden');
+            document.getElementById('timer-container').classList.remove('hidden');
+            document.getElementById('timer-container').classList.add('flex');
+
+            startTimer();
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer-text').textContent =
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    finishEvaluation();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function finishEvaluation() {
+            clearInterval(timer);
+            // Switch back to overview and show submitted status
+            document.getElementById('evaluation-mode').classList.add('hidden');
+            document.getElementById('timer-container').classList.add('hidden');
+
+            document.getElementById('program-header').classList.remove('hidden');
+            document.getElementById('pre-eval-card').classList.remove('hidden');
+            document.getElementById('schedule-area').classList.remove('hidden');
+
+            document.getElementById('eval-start-btn-container').classList.add('hidden');
+            document.getElementById('eval-submitted-status').classList.remove('hidden');
+        }
+
+        // Handle Sidebar responsiveness (Mobile)
+        const mobileBtn = document.querySelector('.md\\:hidden');
+        const sidebar = document.getElementById('sidebar');
+        if (mobileBtn && sidebar) {
+            mobileBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('hidden');
+                sidebar.classList.toggle('flex');
+                sidebar.classList.toggle('fixed');
+                sidebar.classList.toggle('inset-y-0');
+                sidebar.classList.toggle('left-0');
+                sidebar.classList.toggle('shadow-2xl');
+            });
+        }
+    </script>
+</body>
+
+</html>

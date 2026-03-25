@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Intern Dashboard | Sports Science Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        @keyframes slide-up {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-in {
+            animation: slide-up 0.4s ease-out forwards;
+        }
+
+        /* Mobile sidebar transitions */
+        #sidebar {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @media (max-width: 767px) {
+            #sidebar.closed {
+                transform: translateX(-100%);
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-[#f4f8fb] text-[#0a192f] antialiased flex h-screen overflow-hidden relative font-sans">
+
+    <!-- Decorative background blobs -->
+    <div
+        class="fixed top-[-5%] left-[-5%] w-[50vw] h-[50vw] rounded-full bg-[#005af5] opacity-[0.06] blur-[100px] pointer-events-none z-0">
+    </div>
+    <div
+        class="fixed bottom-[-10%] right-[-5%] w-[45vw] h-[45vw] rounded-full bg-purple-600 opacity-[0.05] blur-[120px] pointer-events-none z-0">
+    </div>
+
+    <!-- Sidebar Backdrop (Mobile) -->
+    <div id="sidebar-backdrop"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300">
+    </div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar"
+        class="fixed md:relative z-50 w-64 h-full bg-[#f4f7fb] border-r border-slate-200 flex flex-col flex-shrink-0 closed md:transform-none">
+        <div class="p-6 border-b border-white/50">
+            <div class="text-xl font-bold tracking-tight flex items-center gap-2">
+                <span class="text-blue-500 text-2xl">⚡</span>
+                <div class="leading-tight">
+                    <span class="block text-blue-900 font-black tracking-tighter uppercase">CSS</span>
+                </div>
+            </div>
+            <p class="text-[0.65rem] text-slate-400 mt-4 uppercase font-black tracking-widest">
+                Logged in as: <span class="text-amber-500 font-bold">Intern</span>
+            </p>
+        </div>
+
+        <nav class="p-4 space-y-1 flex-1 overflow-y-auto custom-scrollbar">
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all font-bold text-xs text-blue-600 bg-blue-100 shadow-sm group">
+                <i data-lucide="home" class="w-[18px] h-[18px]"></i>
+                <span class="flex-1 text-left">Dashboard</span>
+                <div class="w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+            </a>
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all font-bold text-xs text-slate-500 hover:text-blue-500 hover:bg-white group">
+                <i data-lucide="user-check" class="w-[18px] h-[18px] text-slate-400 group-hover:text-blue-500"></i>
+                <span class="flex-1 text-left">My Attendance</span>
+            </a>
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all font-bold text-xs text-slate-500 hover:text-blue-500 hover:bg-white group">
+                <i data-lucide="calendar" class="w-[18px] h-[18px] text-slate-400 group-hover:text-blue-500"></i>
+                <span class="flex-1 text-left">Internship Program</span>
+            </a>
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all font-bold text-xs text-slate-500 hover:text-blue-500 hover:bg-white group">
+                <i data-lucide="award" class="w-[18px] h-[18px] text-slate-400 group-hover:text-blue-500"></i>
+                <span class="flex-1 text-left">Certificates</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-white/50">
+            <a href="#"
+                class="w-full flex items-center justify-center gap-2 py-3 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20 rounded-xl font-bold transition-all text-sm">
+                <i data-lucide="log-out" class="w-4 h-4"></i> LOGOUT
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden min-w-0 bg-white/40 relative">
+
+        <!-- Header -->
+        <header
+            class="bg-white/40 backdrop-blur-md z-30 relative p-6 flex justify-between items-center border-b border-white/20">
+            <div class="flex items-center">
+                <button id="mobile-menu-btn"
+                    class="md:hidden mr-4 text-slate-500 hover:text-blue-600 transition-colors p-2 hover:bg-white rounded-lg">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <div class="flex items-center gap-2">
+                    <span class="text-blue-500 text-2xl">⚡</span>
+                    <span class="font-bold text-slate-800">Sports Science Engine</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <!-- Live Clock (Same as Attendance UI) -->
+                <div class="hidden sm:flex flex-col items-end">
+                    <span class="text-[0.6rem] font-black text-slate-400 uppercase tracking-widest leading-none">Local
+                        Time</span>
+                    <span id="live-clock" class="text-xs font-bold text-slate-700">--:--:--</span>
+                </div>
+
+                <!-- Notifications -->
+                <div class="relative">
+                    <button type="button" id="notificationBell"
+                        class="p-2.5 rounded-xl text-slate-500 hover:text-blue-600 hover:bg-white transition shadow-sm border border-transparent hover:border-blue-100 relative">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span id="notificationBadge"
+                            class="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] px-1 flex items-center justify-center text-[9px] font-black text-white bg-red-500 rounded-full border-2 border-white hidden">2</span>
+                    </button>
+
+                    <!-- Notification Panel -->
+                    <div id="notificationPanel"
+                        class="hidden absolute right-0 top-full mt-3 w-80 max-h-[420px] bg-white/95 backdrop-blur-xl border border-white rounded-2xl shadow-xl z-50 flex flex-col overflow-hidden animate-in">
+                        <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <span
+                                class="font-black text-xs uppercase tracking-widest text-slate-800">Notifications</span>
+                            <button type="button" id="notificationPanelClose"
+                                class="p-1 text-slate-400 hover:text-slate-600">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <div id="notificationList"
+                            class="flex-1 overflow-y-auto p-2 space-y-2 min-h-[120px] custom-scrollbar">
+                            <div class="p-4 text-center">
+                                <p id="notificationLoading" class="text-slate-400 text-xs font-bold py-4">Checking for
+                                    updates...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar">
+            <div class="max-w-4xl mx-auto space-y-8">
+
+                <!-- Title Section -->
+                <div class="flex items-center gap-4 mb-2 animate-in">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 shadow-sm">
+                        <i data-lucide="graduation-cap" class="w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-black text-slate-800 tracking-tight">Intern Dashboard</h1>
+                        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Your learning & reports
+                            workspace</p>
+                    </div>
+                </div>
+
+                <!-- Profile Card -->
+                <div id="internProfileCard"
+                    class="bg-white/90 backdrop-blur-2xl shadow-sm border border-white rounded-[2.5rem] p-8 flex flex-col md:flex-row items-center gap-8 animate-in relative overflow-hidden group">
+                    <div
+                        class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl opacity-50 group-hover:bg-blue-100 transition-colors">
+                    </div>
+
+                    <!-- Avatar -->
+                    <div
+                        class="w-28 h-28 rounded-full border-4 border-white shadow-xl overflow-hidden bg-slate-100 flex-shrink-0 relative z-10">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop"
+                            alt="Profile" class="w-full h-full object-cover">
+                    </div>
+
+                    <div class="flex-1 text-center md:text-left relative z-10">
+                        <p class="text-blue-500 font-black text-[0.65rem] uppercase tracking-[0.2em] mb-1">Sports
+                            Science Engine</p>
+                        <h2 class="text-2xl font-black text-slate-800 tracking-tight mb-1">Rahul Sharma</h2>
+                        <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-2">
+                            <span
+                                class="px-3 py-1 bg-blue-50 text-blue-600 text-[0.6rem] font-black uppercase tracking-widest rounded-full border border-blue-100">Batch
+                                24</span>
+                            <span class="text-slate-400 text-xs font-bold tracking-tight">CSS-INT-2023-442</span>
+                        </div>
+                        <div class="mt-4 flex flex-col sm:flex-row items-center gap-4">
+                            <div class="text-[0.65rem] font-bold text-slate-400">
+                                REGISTERED: <span class="text-slate-700">Oct 12, 2023</span>
+                            </div>
+                            <div class="w-1 h-1 bg-slate-300 rounded-full hidden sm:block"></div>
+                            <div class="text-[0.65rem] font-bold text-slate-400">
+                                VALID TILL: <span class="text-blue-600">Nov 11, 2023</span>
+                            </div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div id="profileCardButtons" class="flex flex-wrap justify-center md:justify-start gap-3 mt-6">
+                            <a href="#"
+                                class="px-5 py-2.5 bg-slate-800 text-white text-[0.65rem] font-black uppercase tracking-widest rounded-xl hover:bg-slate-900 transition-all shadow-lg shadow-slate-200">Edit
+                                Profile</a>
+                            <button type="button" id="downloadProfileCardBtn"
+                                class="px-5 py-2.5 bg-blue-600 text-white text-[0.65rem] font-black uppercase tracking-widest rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 flex items-center gap-2">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> Download Card
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail Grids -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in" style="animation-delay: 0.1s;">
+                    <!-- Personal Details -->
+                    <div class="bg-white/80 backdrop-blur-xl border border-white rounded-[2rem] p-8 shadow-sm">
+                        <h3
+                            class="text-sm font-black text-slate-800 uppercase tracking-widest border-b border-slate-50 pb-4 mb-5 flex items-center justify-between">
+                            Personal Info
+                            <i data-lucide="user" class="w-4 h-4 text-blue-500"></i>
+                        </h3>
+                        <dl class="space-y-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <dt class="font-bold text-slate-400">DOB</dt>
+                                <dd class="font-black text-slate-700">Aug 15, 1998</dd>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <dt class="font-bold text-slate-400">Gender</dt>
+                                <dd class="font-black text-slate-700">Male</dd>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <dt class="font-bold text-slate-400">Phone</dt>
+                                <dd class="font-black text-slate-700">+91 98765 43210</dd>
+                            </div>
+                            <div id="personalDetailsMore" class="hidden space-y-4 pt-4 animate-in">
+                                <div class="flex justify-between items-center text-sm">
+                                    <dt class="font-bold text-slate-400">Email</dt>
+                                    <dd class="font-black text-slate-700">rahul.s@example.com</dd>
+                                </div>
+                                <div class="text-sm border-t border-slate-50 pt-4">
+                                    <dt class="font-bold text-slate-400 mb-2">Address</dt>
+                                    <dd class="font-black text-slate-700 italic leading-relaxed">
+                                        123, Science Park Road, Bengaluru, Karnataka - 560001
+                                    </dd>
+                                </div>
+                            </div>
+                        </dl>
+                        <button type="button" id="personalDetailsToggle"
+                            class="mt-6 w-full py-2 border border-slate-100 rounded-xl text-[0.6rem] font-black uppercase tracking-widest text-blue-600 hover:bg-blue-50 transition-colors">Show
+                            more</button>
+                    </div>
+
+                    <!-- Academic & Internship -->
+                    <div class="bg-white/80 backdrop-blur-xl border border-white rounded-[2rem] p-8 shadow-sm">
+                        <h3
+                            class="text-sm font-black text-slate-800 uppercase tracking-widest border-b border-slate-50 pb-4 mb-5 flex items-center justify-between">
+                            Internship & Edu
+                            <i data-lucide="book-open" class="w-4 h-4 text-blue-500"></i>
+                        </h3>
+                        <dl class="space-y-4">
+                            <div class="flex justify-between items-start text-sm">
+                                <dt class="font-bold text-slate-400">College</dt>
+                                <dd class="font-black text-slate-700 text-right max-w-[180px]">MS Ramaiah College of
+                                    Physiotherapy</dd>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <dt class="font-bold text-slate-400">Course</dt>
+                                <dd class="font-black text-slate-700">BPT</dd>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <dt class="font-bold text-slate-400">Year</dt>
+                                <dd class="font-black text-slate-700">Final Year</dd>
+                            </div>
+                            <div id="academicDetailsMore" class="hidden space-y-4 pt-4 animate-in">
+                                <div class="flex justify-between items-center text-sm">
+                                    <dt class="font-bold text-slate-400">Batch Code</dt>
+                                    <dd class="font-mono text-xs font-black text-blue-600">INT-23-OCT-B1</dd>
+                                </div>
+                                <div class="border-t border-slate-50 pt-4">
+                                    <dt class="font-bold text-slate-400 mb-2">Coordinator</dt>
+                                    <dd class="font-black text-slate-700">Dr. Ananya Reddy</dd>
+                                    <dd class="text-[0.65rem] font-bold text-slate-400 mt-1">ananya.r@css-engine.org
+                                    </dd>
+                                </div>
+                            </div>
+                        </dl>
+                        <button type="button" id="academicDetailsToggle"
+                            class="mt-6 w-full py-2 border border-slate-100 rounded-xl text-[0.6rem] font-black uppercase tracking-widest text-blue-600 hover:bg-blue-50 transition-colors">Show
+                            more</button>
+                    </div>
+                </div>
+
+                <!-- Documents Section -->
+                <div class="bg-white/80 backdrop-blur-xl border border-white rounded-[2rem] p-8 shadow-sm animate-in"
+                    style="animation-delay: 0.2s;">
+                    <h3
+                        class="text-sm font-black text-slate-800 uppercase tracking-widest border-b border-slate-50 pb-4 mb-6 flex items-center justify-between">
+                        Verified Documents
+                        <i data-lucide="file-text" class="w-4 h-4 text-blue-500"></i>
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div
+                            class="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-slate-400 border border-slate-100">
+                                    <i data-lucide="image" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-black text-slate-700">Profile Photo</p>
+                                    <p class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">
+                                        rahul_profile.jpg</p>
+                                </div>
+                            </div>
+                            <a href="#" class="p-2 text-blue-500 hover:bg-white rounded-lg transition-colors">
+                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                            </a>
+                        </div>
+                        <div
+                            class="p-4 bg-slate-50/50 rounded-2xl border border-slate-100 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 rounded-lg bg-white flex items-center justify-center text-blue-600 border border-blue-100">
+                                    <i data-lucide="contact" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-black text-slate-700">Internship ID</p>
+                                    <p class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">
+                                        id_card_2023.pdf</p>
+                                </div>
+                            </div>
+                            <a href="#"
+                                class="px-4 py-2 bg-blue-100 text-blue-600 rounded-xl text-[0.6rem] font-black uppercase tracking-widest hover:bg-blue-200 transition-colors">Download</a>
+                        </div>
+                    </div>
+                    <div class="mt-8 pt-6 border-t border-slate-50 text-center">
+                        <a href="#"
+                            class="inline-flex items-center gap-2 px-8 py-3 bg-slate-800 text-white text-[0.65rem] font-black uppercase tracking-widest rounded-xl hover:bg-slate-900 transition-all shadow-lg shadow-slate-200">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Upload New Documents
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- html2canvas for card download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        (function () {
+            lucide.createIcons();
+
+            // 1. Live Clock
+            const liveClock = document.getElementById('live-clock');
+            function updateClock() {
+                const now = new Date();
+                liveClock.textContent = now.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            }
+            setInterval(updateClock, 1000);
+            updateClock();
+
+            // 2. Sidebar & Mobile Toggle
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+
+            function openSidebar() {
+                sidebar.classList.remove('closed');
+                sidebar.classList.add('open');
+                backdrop.classList.remove('hidden');
+                setTimeout(() => backdrop.classList.add('opacity-100'), 10);
+            }
+            function closeSidebar() {
+                sidebar.classList.add('closed');
+                sidebar.classList.remove('open');
+                backdrop.classList.remove('opacity-100');
+                setTimeout(() => backdrop.classList.add('hidden'), 300);
+            }
+            mobileBtn.addEventListener('click', openSidebar);
+            backdrop.addEventListener('click', closeSidebar);
+
+            // 3. Notification Panel
+            const bell = document.getElementById('notificationBell');
+            const badge = document.getElementById('notificationBadge');
+            const panel = document.getElementById('notificationPanel');
+            const closeNotif = document.getElementById('notificationPanelClose');
+            const listEl = document.getElementById('notificationList');
+
+            bell.addEventListener('click', (e) => {
+                e.stopPropagation();
+                panel.classList.toggle('hidden');
+                badge.classList.add('hidden'); // Mark as read mockup
+
+                // Mock Load notifications
+                if (listEl.innerHTML.includes('Checking for updates')) {
+                    setTimeout(() => {
+                        listEl.innerHTML = `
+                            <div class="notif-item p-4 hover:bg-slate-50 cursor-pointer border-b border-slate-50 transition-colors">
+                                <p class="text-xs font-black text-slate-800">New Training Session</p>
+                                <p class="text-[0.7rem] text-slate-500 mt-1 leading-relaxed">A new specialized session on ACL Bio-mechanics has been added to your schedule.</p>
+                                <p class="text-[0.6rem] text-blue-500 font-bold mt-2 uppercase">10 mins ago</p>
+                            </div>
+                            <div class="notif-item p-4 hover:bg-slate-50 cursor-pointer border-b border-slate-50 transition-colors opacity-60">
+                                <p class="text-xs font-black text-slate-800">Attendance Verified</p>
+                                <p class="text-[0.7rem] text-slate-500 mt-1">Your attendance for yesterday has been approved by the coordinator.</p>
+                                <p class="text-[0.6rem] text-slate-400 font-bold mt-2 uppercase">Yesterday</p>
+                            </div>
+                        `;
+                    }, 800);
+                }
+            });
+
+            closeNotif.addEventListener('click', () => panel.classList.add('hidden'));
+            document.addEventListener('click', (e) => {
+                if (!panel.contains(e.target) && !bell.contains(e.target)) panel.classList.add('hidden');
+            });
+
+            // 4. Details Toggles
+            function setupToggle(btnId, targetId) {
+                const btn = document.getElementById(btnId);
+                const target = document.getElementById(targetId);
+                btn.addEventListener('click', () => {
+                    const isHidden = target.classList.contains('hidden');
+                    target.classList.toggle('hidden');
+                    btn.textContent = isHidden ? 'Show less' : 'Show more';
+                });
+            }
+            setupToggle('personalDetailsToggle', 'personalDetailsMore');
+            setupToggle('academicDetailsToggle', 'academicDetailsMore');
+
+            // 5. Download Card Logic
+            const downloadBtn = document.getElementById('downloadProfileCardBtn');
+            const card = document.getElementById('internProfileCard');
+            const buttonsWrap = document.getElementById('profileCardButtons');
+
+            downloadBtn.addEventListener('click', () => {
+                downloadBtn.disabled = true;
+                downloadBtn.innerHTML = '<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Generating...';
+                lucide.createIcons();
+
+                // Hide buttons before capture
+                buttonsWrap.style.opacity = '0';
+
+                html2canvas(card, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    borderRadius: 40
+                }).then(canvas => {
+                    buttonsWrap.style.opacity = '1';
+                    const link = document.createElement('a');
+                    link.download = 'CSS-Intern-Card.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = '<i data-lucide="download" class="w-3.5 h-3.5"></i> Download Card';
+                    lucide.createIcons();
+                }).catch(err => {
+                    console.error('Canvas capture failed', err);
+                    buttonsWrap.style.opacity = '1';
+                    downloadBtn.disabled = false;
+                    downloadBtn.innerHTML = 'Error. Try Again';
+                });
+            });
+        })();
+    </script>
+</body>
+
+</html>
