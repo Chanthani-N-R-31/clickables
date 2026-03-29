@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
     <title>Front Desk Dashboard - I Lit My Sport</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
         body {
@@ -14,17 +13,22 @@
         }
 
         ::-webkit-scrollbar {
-            height: 4px;
-            width: 4px;
+            height: 6px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
             background: #f1f5f9;
+            border-radius: 8px;
         }
 
         ::-webkit-scrollbar-thumb {
             background: #cbd5e1;
-            border-radius: 10px;
+            border-radius: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
 
         @supports (padding-top: env(safe-area-inset-top)) {
@@ -45,11 +49,9 @@
         }
 
         .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
         }
 
         /* Specific styling for the tan package box in the notes */
@@ -59,25 +61,11 @@
             border-radius: 12px;
             padding: 20px;
         }
-
-        .sidebar-transition {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
     </style>
 </head>
 
 <body
-    class="bg-gradient-to-br from-[#f4f8fb] via-[#edf3f8] to-[#e0eaf5] text-[#0a192f] antialiased flex h-screen overflow-hidden relative w-full">
-
-    <!-- Global Navigation -->
-    <div class="fixed bottom-6 right-6 flex gap-4 z-[40]">
-        <button onclick="window.history.back()" class="flex items-center justify-center w-12 h-12 bg-white/80 backdrop-blur-md border border-slate-200 rounded-full shadow-lg hover:bg-white transition-all active:scale-95 group">
-            <i class="ph ph-arrow-left text-xl text-slate-600 group-hover:text-blue-600"></i>
-        </button>
-        <a href="IT.drawio (1).html" class="flex items-center justify-center w-12 h-12 bg-blue-600 border border-blue-500 rounded-full shadow-lg hover:bg-blue-700 transition-all active:scale-95 group">
-            <i class="ph ph-house text-xl text-white"></i>
-        </a>
-    </div>
+    class="bg-gradient-to-br from-[#f4f8fb] via-[#edf3f8] to-[#e0eaf5] text-[#0a192f] antialiased flex h-screen overflow-hidden relative">
 
     <!-- Decorative background blobs -->
     <div
@@ -87,139 +75,197 @@
         class="fixed bottom-[-10%] right-[-5%] w-[45vw] h-[45vw] rounded-full bg-purple-600 opacity-[0.05] blur-[120px] pointer-events-none z-0">
     </div>
 
+    <!-- Global Navigation -->
+    <div class="fixed bottom-6 right-6 flex gap-4 z-[9999]">
+        <a href="FRONT DESK.drawio.html"
+            class="flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-md border border-slate-200 rounded-full shadow-xl hover:bg-white transition-all active:scale-95 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-slate-600 group-hover:text-blue-600" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </a>
+        <a href="IT.drawio (1).html"
+            class="flex items-center justify-center w-14 h-14 bg-blue-600 border border-blue-500 rounded-full shadow-xl hover:bg-blue-700 transition-all active:scale-95 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+        </a>
+    </div>
+
     <!-- Mobile Sidebar Backdrop -->
-    <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-[45] hidden md:hidden"></div>
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden"></div>
 
     <!-- Sidebar -->
-    <aside id="sidebar"
-        class="fixed md:relative w-64 h-full bg-white border-r border-slate-200 shadow-xl z-50 transform -translate-x-full md:translate-x-0 sidebar-transition flex flex-col flex-shrink-0">
-        <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-            <div class="text-xl font-bold tracking-wider flex items-center gap-2 text-[#0a192f]">
-                <span class="text-blue-500 text-2xl font-black">S</span> 
-                <span>Sports Science</span>
+    <aside id="mobile-sidebar"
+        class="w-72 bg-white/80 backdrop-blur-2xl border-r border-slate-200 shadow-xl z-50 fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-300 ease-in-out flex flex-col flex-shrink-0">
+        <div class="p-8 border-b border-slate-50">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-[#005af5] text-3xl">⚡</span>
+                <div class="font-black text-xl tracking-tighter text-[#1e293b] leading-tight uppercase">Sports Science<br>Engineer</div>
             </div>
-            <button onclick="toggleSidebar()" class="md:hidden text-slate-400 p-1">
-                <i class="ph ph-x text-2xl font-bold"></i>
-            </button>
+            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-200">A</div>
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Logged in</p>
+                    <p class="text-xs font-bold text-slate-800">Admin Portal</p>
+                </div>
+            </div>
         </div>
 
-        <nav class="p-4 space-y-2 flex-1 overflow-y-auto text-sm font-medium">
-            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-blue-50 text-[#005af5] font-black rounded-xl transition shadow-sm border border-blue-100">
-                <i class="ph ph-house text-lg"></i> Dashboard Hub
+        <nav class="p-6 space-y-2 flex-1 overflow-y-auto">
+            <a href="admin_dashboard.html" class="flex items-center gap-4 px-4 py-4 bg-blue-600 text-white rounded-[2rem] shadow-xl shadow-blue-200 transition-all font-black uppercase tracking-widest text-[10px]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                Dashboard Hub
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-[#005af5] hover:bg-slate-50 rounded-xl transition">
-                <i class="ph ph-chat-centered-text text-lg"></i> Messages
+            <a href="admin_intern.html" class="flex items-center gap-4 px-4 py-4 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-[2rem] transition-all font-black uppercase tracking-widest text-[10px] group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Intern Registry
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-[#005af5] hover:bg-slate-50 rounded-xl transition">
-                <i class="ph ph-calendar-check text-lg"></i> My Attendance
+            <a href="admin_calender.html" class="flex items-center gap-4 px-4 py-4 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-[2rem] transition-all font-black uppercase tracking-widest text-[10px] group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                Scheduler
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-[#005af5] hover:bg-slate-50 rounded-xl transition">
-                <i class="ph ph-user text-lg"></i> My Profile
+            <a href="billing.html" class="flex items-center gap-4 px-4 py-4 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-[2rem] transition-all font-black uppercase tracking-widest text-[10px] group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                Billing
             </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-[#005af5] hover:bg-slate-50 rounded-xl transition">
-                <i class="ph ph-calendar-blank text-lg"></i> Scheduler
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-[#005af5] hover:bg-slate-50 rounded-xl transition">
-                <i class="ph ph-graduation-cap text-lg"></i> Interns
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-[#005af5] hover:bg-slate-50 rounded-xl transition">
-                <i class="ph ph-receipt text-lg"></i> Billing
+            <a href="admin_attendance.html" class="flex items-center gap-4 px-4 py-4 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-[2rem] transition-all font-black uppercase tracking-widest text-[10px] group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                My Attendance
             </a>
         </nav>
 
-        <div class="p-4 border-t border-slate-100">
-            <a href="#" class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-xl transition text-xs font-black uppercase tracking-widest">
-                <i class="ph ph-sign-out font-bold"></i> Logout
-            </a>
+        <div class="p-6 border-t border-slate-50">
+            <button class="w-full flex items-center justify-center gap-3 px-4 py-4 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-[2rem] transition-all font-black uppercase tracking-widest text-[10px]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Logout
+            </button>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col overflow-hidden relative w-full">
+    <main class="flex-1 flex flex-col overflow-hidden relative">
         <!-- Header -->
-        <header class="bg-transparent z-20 relative flex-shrink-0 p-4 md:p-6 flex justify-between items-center bg-white/40 md:bg-transparent backdrop-blur-md md:backdrop-blur-none border-b border-slate-200/50 md:border-none">
-            <div class="flex items-center gap-3">
-                <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-600 bg-white shadow-sm rounded-xl border border-slate-100 active:scale-95 transition-transform">
-                    <i class="ph ph-list text-2xl font-bold"></i>
+        <header class="bg-transparent z-20 relative flex-shrink-0 p-4 md:p-6 flex justify-between items-center">
+            <div class="flex items-center">
+                <button type="button" id="mobile-menu-btn" class="md:hidden mr-4 text-slate-500 hover:text-[#005af5]">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
                 </button>
-                <h1 class="text-xl md:text-2xl font-black text-[#0a192f] tracking-tight">Front Desk Dashboard</h1>
+                <h1 class="text-2xl font-bold text-[#0a192f]">Front Desk Dashboard</h1>
             </div>
-            <a href="REGISTRATION.html"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-xl font-black text-[10px] md:text-xs shadow-lg shadow-blue-200 transition flex items-center gap-2 active:scale-95">
-                <i class="ph ph-plus-circle text-lg"></i>
-                <span class="hidden sm:inline">New Registration</span>
-                <span class="sm:hidden">New</span>
-            </a>
+            <button
+                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl font-bold shadow-lg shadow-blue-200 transition flex items-center gap-2">
+                <span>+ New Registration</span>
+            </button>
         </header>
 
         <!-- Content Area -->
-        <div class="flex-1 overflow-y-auto p-4 md:p-8">
+        <div class="flex-1 overflow-y-auto p-6 md:p-8">
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
-                <div class="glass-card p-5 md:p-6 rounded-2xl flex items-center justify-between shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="glass-card p-6 rounded-2xl flex items-center justify-between shadow-sm">
                     <div>
-                        <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Athletes</p>
-                        <p class="text-2xl md:text-3xl font-black text-[#0a192f] mt-1">124</p>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Athletes</p>
+                        <p class="text-3xl font-extrabold text-[#0a192f] mt-1">124</p>
                     </div>
-                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 text-xl md:text-2xl shadow-inner">🏃</div>
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 text-2xl shadow-inner">
+                        🏃</div>
                 </div>
-                <div class="glass-card p-5 md:p-6 rounded-2xl flex items-center justify-between shadow-sm">
+                <div class="glass-card p-6 rounded-2xl flex items-center justify-between shadow-sm">
                     <div>
-                        <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Interns</p>
-                        <p class="text-2xl md:text-3xl font-black text-[#0a192f] mt-1">42</p>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Interns</p>
+                        <p class="text-3xl font-extrabold text-[#0a192f] mt-1">42</p>
                     </div>
-                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-yellow-500/10 flex items-center justify-center text-yellow-500 text-xl md:text-2xl shadow-inner">🎓</div>
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-yellow-500/10 flex items-center justify-center text-yellow-500 text-2xl shadow-inner">
+                        🎓</div>
                 </div>
-                <div class="glass-card p-5 md:p-6 rounded-2xl flex items-center justify-between shadow-sm sm:col-span-2 lg:col-span-1">
+                <div class="glass-card p-6 rounded-2xl flex items-center justify-between shadow-sm">
                     <div>
-                        <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Visitors</p>
-                        <p class="text-2xl md:text-3xl font-black text-[#0a192f] mt-1">18</p>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Visitors</p>
+                        <p class="text-3xl font-extrabold text-[#0a192f] mt-1">18</p>
                     </div>
-                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 text-xl md:text-2xl shadow-inner">👁️</div>
+                    <div
+                        class="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 text-2xl shadow-inner">
+                        👁️</div>
                 </div>
             </div>
 
             <!-- Main Table -->
-            <div class="glass-card rounded-[1.5rem] md:rounded-2xl overflow-hidden shadow-xl border border-white">
-                <div class="p-5 md:p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2 bg-white/50">
-                    <h2 class="text-lg font-black text-[#0a192f] tracking-tight">Recent Walk-ins & Registrations</h2>
-                    <p class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">Live Updates</p>
+            <div class="glass-card rounded-2xl overflow-hidden shadow-xl border border-white">
+                <div class="p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                    <h2 class="text-lg font-bold text-[#0a192f]">Recent Walk-ins & Registrations</h2>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Live Updates Available</p>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse min-w-[700px]">
+                    <table class="w-full text-left border-collapse">
                         <thead>
-                            <tr class="bg-slate-50/50 text-slate-400 text-[9px] border-b border-slate-100 uppercase font-black tracking-[0.2em]">
-                                <th class="p-5">Name</th>
-                                <th class="p-5">Category</th>
-                                <th class="p-5">Purpose/Sport</th>
-                                <th class="p-5">Date</th>
-                                <th class="p-5">Referred to</th>
-                                <th class="p-5 text-right">Action</th>
+                            <tr
+                                class="bg-slate-50/50 text-slate-400 text-[10px] border-b border-slate-100 uppercase font-black tracking-widest">
+                                <th class="p-4">Name</th>
+                                <th class="p-4">Category</th>
+                                <th class="p-4">Purpose/Sport</th>
+                                <th class="p-4">Date</th>
+                                <th class="p-4">Referred to</th>
+                                <th class="p-4 text-right">Action</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50 text-sm">
                             <tr class="hover:bg-white/80 transition group">
-                                <td class="p-5 font-bold text-[#0a192f]">Amit Sharma</td>
-                                <td class="p-5"><span class="px-2 py-1 rounded-md text-[9px] font-black border bg-blue-50 text-blue-500 border-blue-100 uppercase">Athlete</span></td>
-                                <td class="p-5 text-slate-600 font-medium">Cricket - Performance</td>
-                                <td class="p-5 text-slate-400 font-bold text-[11px]">Today, 2:15 PM</td>
-                                <td class="p-5"><span class="text-slate-300 italic">—</span></td>
-                                <td class="p-5 text-right">
+                                <td class="p-4 font-bold text-[#0a192f]">Amit Sharma</td>
+                                <td class="p-4"><span
+                                        class="px-2 py-1 rounded-md text-[10px] font-black border bg-blue-50 text-blue-500 border-blue-100 uppercase">Athlete</span>
+                                </td>
+                                <td class="p-4 text-slate-600">Cricket - Performance</td>
+                                <td class="p-4 text-slate-400 font-medium">Today, 2:15 PM</td>
+                                <td class="p-4"><span class="text-slate-300 italic">—</span></td>
+                                <td class="p-4 text-right">
                                     <button onclick="toggleModal('counsellorModal', 'Amit Sharma')"
-                                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-xl text-[10px] uppercase font-black tracking-widest transition shadow-md shadow-indigo-100 active:scale-95">Assign</button>
+                                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition shadow-md shadow-indigo-100">Assign
+                                        Counselling</button>
                                 </td>
                             </tr>
                             <tr class="hover:bg-white/80 transition">
-                                <td class="p-5 font-bold text-[#0a192f]">Karan Nair</td>
-                                <td class="p-5"><span class="px-2 py-1 rounded-md text-[9px] font-black border bg-purple-50 text-purple-500 border-purple-100 uppercase">Athlete</span></td>
-                                <td class="p-5 text-slate-600 font-medium">Swimming - Assessment</td>
-                                <td class="p-5 text-slate-400 font-bold text-[11px]">Today, 1:45 PM</td>
-                                <td class="p-5"><span class="text-cyan-600 font-black bg-cyan-50 px-2 py-1 rounded-md text-[9px] uppercase tracking-widest">S&C</span></td>
-                                <td class="p-5 text-right flex items-center justify-end gap-2">
+                                <td class="p-4 font-bold text-[#0a192f]">Karan Nair</td>
+                                <td class="p-4"><span
+                                        class="px-2 py-1 rounded-md text-[10px] font-black border bg-purple-50 text-purple-500 border-purple-100 uppercase">Athlete</span>
+                                </td>
+                                <td class="p-4 text-slate-600">Swimming - Assessment</td>
+                                <td class="p-4 text-slate-400 font-medium">Today, 1:45 PM</td>
+                                <td class="p-4"><span
+                                        class="text-cyan-600 font-bold bg-cyan-50 px-2 py-1 rounded-md text-[10px]">S&C</span>
+                                </td>
+                                <td class="p-4 text-right">
                                     <button onclick="toggleModal('notesModal', 'Karan Nair')"
-                                        class="bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition active:scale-95">Notes</button>
+                                        class="bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition mr-2">Notes</button>
                                     <button onclick="toggleModal('paymentModal', 'Karan Nair')"
-                                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition shadow-md shadow-green-100 active:scale-95">Pay</button>
+                                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition shadow-md shadow-green-100">Proceed
+                                        to Pay</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-white/80 transition">
+                                <td class="p-4 font-bold text-[#0a192f]">Priya Verma</td>
+                                <td class="p-4"><span
+                                        class="px-2 py-1 rounded-md text-[10px] font-black border bg-blue-50 text-blue-500 border-blue-100 uppercase">Athlete</span>
+                                </td>
+                                <td class="p-4 text-slate-600">Badminton - Agility</td>
+                                <td class="p-4 text-slate-400 font-medium">Today, 11:30 AM</td>
+                                <td class="p-4"><span
+                                        class="text-cyan-600 font-bold bg-cyan-50 px-2 py-1 rounded-md text-[10px]">Physiotherapy</span>
+                                </td>
+                                <td class="p-4 text-right">
+                                    <span
+                                        class="inline-block bg-slate-100 text-slate-400 px-3 py-2 rounded-lg text-[10px] font-black uppercase border border-slate-200 mr-2">Payment
+                                        Done</span>
+                                    <button onclick="toggleModal('sendToDeptModal', 'Priya Verma')"
+                                        class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition shadow-md shadow-amber-100">Send
+                                        to Dept</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -230,114 +276,213 @@
     </main>
 
     <!-- Modal Container -->
-    <div id="modal-container" class="fixed inset-0 z-[60] hidden overflow-y-auto">
-        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-[4px]" onclick="closeAllModals()"></div>
+    <div id="modal-container" class="fixed inset-0 z-[60] hidden items-center justify-center p-4">
+        <div class="fixed inset-0 bg-slate-900/30 backdrop-blur-[2px]" onclick="closeAllModals()"></div>
 
-        <div class="flex min-h-full items-center justify-center p-4">
-            <!-- Notes Modal -->
-            <div id="notesModal" class="relative bg-[#f1f5f9] border border-white rounded-[24px] md:rounded-[28px] shadow-2xl w-full max-w-2xl hidden flex-col overflow-hidden animate-in">
-                <div class="p-6 md:p-8 pb-4 flex justify-between items-start">
-                    <div>
-                        <h3 class="text-xl md:text-2xl font-black text-[#1e293b] tracking-tight">Counselling notes</h3>
-                        <p id="notesAthleteName" class="text-slate-500 font-bold text-sm mt-1">Athlete Name</p>
-                    </div>
-                    <button onclick="closeAllModals()" class="p-2 hover:bg-slate-200 rounded-full text-slate-400 transition-colors">
-                        <i class="ph ph-x text-2xl font-bold"></i>
-                    </button>
+        <!-- Notes Modal (Layout matched to image_d66804.png) -->
+        <div id="notesModal"
+            class="relative bg-[#f1f5f9] border border-white rounded-[28px] shadow-2xl w-full max-w-2xl hidden flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="p-8 pb-4 flex justify-between items-start">
+                <div>
+                    <h3 class="text-2xl font-bold text-[#1e293b] tracking-tight">Counselling notes</h3>
+                    <p id="notesAthleteName" class="text-slate-500 text-sm mt-1">Athlete Name</p>
                 </div>
+                <button onclick="closeAllModals()" class="p-1 hover:bg-slate-200 rounded text-slate-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
 
-                <div class="p-6 md:p-8 pt-2 space-y-6 overflow-y-auto max-h-[60vh] md:max-h-[75vh]">
-                    <!-- Content similar to previous but more responsive padding -->
-                    <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">REGISTRATION</p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-4 text-sm font-medium">
-                            <div class="flex gap-2">
-                                <span class="text-slate-500">Category:</span>
-                                <span class="text-slate-800 font-bold">athlete</span>
-                            </div>
-                            <div class="flex gap-2">
-                                <span class="text-slate-500">Sport:</span>
-                                <span class="text-slate-800 font-bold">Swimming</span>
-                            </div>
+            <div class="p-8 pt-2 space-y-6 overflow-y-auto max-h-[75vh]">
+                <!-- Registration Box -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div class="mb-4">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">REGISTRATION</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-4 text-sm">
+                        <div class="flex gap-2">
+                            <span class="text-slate-500">Category:</span>
+                            <span class="text-slate-800 font-medium">athlete</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="text-slate-500">Sport:</span>
+                            <span class="text-slate-800 font-medium">Swimming</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="text-slate-500">Visit purpose:</span>
+                            <span class="text-slate-800 font-medium">Strength and Conditioning</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="text-slate-500">Referred to:</span>
+                            <span class="text-cyan-500 font-bold">Strength and Conditioning</span>
                         </div>
                     </div>
-                    
-                    <div class="package-box p-6">
-                        <p class="text-[9px] font-black text-[#a18c7e] uppercase tracking-widest mb-1">RECOMMENDED PACKAGE</p>
-                        <p class="text-white text-xl md:text-2xl font-black tracking-tight leading-tight">SNC 3Month</p>
+                </div>
+
+                <!-- Specialist Note Entry -->
+                <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                    <div class="flex justify-between items-center text-sm">
+                        <span class="text-slate-400 font-medium">23 Mar 2026</span>
+                        <span class="text-slate-400 font-medium">Anchalsingh</span>
+                    </div>
+
+                    <div class="space-y-1">
+                        <p class="text-cyan-400 font-bold text-sm">Referred to: Strength and Conditioning</p>
+                        <p class="text-slate-700 text-sm">Aiming for Asian Games - 2026</p>
+                    </div>
+
+                    <!-- Recommended Package (Tan Styling) -->
+                    <div class="package-box">
+                        <p class="text-[10px] font-black text-[#a18c7e] uppercase tracking-widest mb-1">RECOMMENDED
+                            PACKAGE</p>
+                        <p class="text-white text-lg font-black tracking-tight">SNC 3Month</p>
+                    </div>
+
+                    <!-- Detailed Fields -->
+                    <div class="space-y-3 pt-2 text-sm">
+                        <div class="flex gap-2">
+                            <span class="text-slate-400">Occupation:</span>
+                            <span class="text-slate-600">Professional Athlete</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="text-slate-400">Target department:</span>
+                            <span class="text-slate-600 uppercase">snc</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="text-slate-400">S&C category:</span>
+                            <span class="text-slate-600">Performance Assessment</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="text-slate-400">S&C goals:</span>
+                            <span class="text-slate-600">Test and decide</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <span class="text-slate-400">Referred to department:</span>
+                            <span class="text-slate-600">Strength and Conditioning</span>
+                        </div>
+                        <div class="flex gap-2 items-start">
+                            <span class="text-slate-400 shrink-0">Counsellor remarks:</span>
+                            <span class="text-slate-600">Aiming for Asian Games - 2026</span>
+                        </div>
                     </div>
                 </div>
-
-                <div class="p-6 md:p-8 pt-4 pb-8 flex bg-slate-50/50">
-                    <button onclick="closeAllModals()" class="w-full sm:w-auto px-8 py-3 bg-white text-slate-500 font-black rounded-xl border border-slate-200 hover:bg-slate-50 transition shadow-sm uppercase text-xs tracking-widest">Close</button>
-                </div>
             </div>
 
-            <!-- Other modals should follow same pattern -->
-            <div id="counsellorModal" class="relative bg-white border border-white rounded-[24px] shadow-2xl w-full max-w-md hidden flex-col overflow-hidden animate-in">
-                <div class="p-6 md:p-8 border-b border-slate-50 bg-slate-50/30">
-                    <h3 class="text-xl font-black text-[#1e293b] tracking-tight">Assign Specialist</h3>
-                    <p id="assignAthleteName" class="text-slate-500 font-bold text-sm mt-1">Athlete Name</p>
+            <!-- Footer Close -->
+            <div class="p-8 pt-4 pb-8 flex justify-start">
+                <button onclick="closeAllModals()"
+                    class="px-8 py-3 bg-[#f1f5f9] text-[#475569] font-bold rounded-xl border border-slate-200 hover:bg-slate-100 transition shadow-sm">Close</button>
+            </div>
+        </div>
+
+        <!-- Assign Counselling Modal -->
+        <div id="counsellorModal"
+            class="relative bg-white border border-white rounded-[28px] shadow-2xl w-full max-w-md hidden flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="p-8 border-b border-slate-50 bg-slate-50/30">
+                <h3 class="text-xl font-bold text-[#1e293b] tracking-tight">Assign Specialist</h3>
+                <p id="assignAthleteName" class="text-slate-500 text-sm mt-1">Athlete Name</p>
+            </div>
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Counselling
+                        Date</label>
+                    <input type="date" value="2026-03-24"
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all outline-none font-medium">
                 </div>
-                <div class="p-6 md:p-8 space-y-6">
-                    <button onclick="confirmAction('Counselling assigned successfully!')"
-                        class="w-full py-4 bg-indigo-600 text-white font-black rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all uppercase text-xs tracking-widest active:scale-95">Confirm Assignment</button>
+                <div>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Select
+                        Specialist</label>
+                    <select
+                        class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 transition-all outline-none font-medium appearance-none cursor-pointer">
+                        <option>Dr. Anchalsingh</option>
+                        <option>Dr. John Smith</option>
+                        <option>Sarah Jenkins (S&C)</option>
+                    </select>
+                </div>
+                <button onclick="confirmAction('Counselling assigned successfully!')"
+                    class="w-full py-4 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">Confirm
+                    Assignment</button>
+            </div>
+        </div>
+
+        <!-- Send to Dept Modal -->
+        <div id="sendToDeptModal"
+            class="relative bg-white border border-white rounded-[28px] shadow-2xl w-full max-w-md hidden flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="p-8 border-b border-slate-50 bg-slate-50/30">
+                <h3 class="text-xl font-bold text-[#1e293b] tracking-tight">Send to Department</h3>
+                <p id="sendToDeptAthleteName" class="text-slate-500 text-sm mt-1">Athlete Name</p>
+            </div>
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Target
+                        Department</label>
+                    <select
+                        class="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-semibold focus:ring-4 focus:ring-amber-500/10 focus:border-amber-600 transition-all outline-none appearance-none cursor-pointer">
+                        <option value="snc">Strength & Conditioning</option>
+                        <option value="physio">Physiotherapy</option>
+                        <option value="biomechanics">Biomechanics</option>
+                        <option value="nutrition">Nutrition</option>
+                    </select>
+                </div>
+                <div class="bg-amber-50 p-4 rounded-2xl border border-amber-100">
+                    <p class="text-xs text-amber-800 leading-relaxed font-medium">This will move the athlete from the
+                        registration list to the department's active queue.</p>
                 </div>
             </div>
-            
-            <!-- Payment Modal -->
-            <div id="paymentModal" class="relative bg-white border border-white rounded-[24px] shadow-2xl w-full max-w-sm hidden flex-col overflow-hidden animate-in">
-                <div class="p-6 md:p-8 pb-4">
-                    <h3 class="text-xl font-black text-green-600 tracking-tight">Finalize Payment</h3>
-                    <p id="paymentAthleteName" class="text-slate-500 font-bold text-sm mt-1">Athlete Name</p>
+            <div class="p-8 pt-0 flex gap-3">
+                <button onclick="closeAllModals()"
+                    class="flex-1 px-6 py-4 bg-white text-slate-500 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all">Cancel</button>
+                <button onclick="confirmAction('Athlete sent to department queue.')"
+                    class="flex-1 px-6 py-4 bg-amber-600 text-white font-bold rounded-2xl shadow-lg shadow-amber-200 hover:bg-amber-700 transition-all">Send
+                    Now</button>
+            </div>
+        </div>
+
+        <!-- Payment Modal -->
+        <div id="paymentModal"
+            class="relative bg-white border border-white rounded-[28px] shadow-2xl w-full max-w-sm hidden flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div class="p-8 pb-4">
+                <h3 class="text-xl font-bold text-green-600 tracking-tight">Finalize Payment</h3>
+                <p id="paymentAthleteName" class="text-slate-500 text-sm mt-1">Athlete Name</p>
+            </div>
+            <div class="p-8 space-y-4">
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">₹</span>
+                    <input type="number" placeholder="500"
+                        class="w-full pl-10 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-2xl font-black text-[#0a192f] outline-none">
                 </div>
-                <div class="p-6 md:p-8 space-y-4">
-                    <button onclick="confirmAction('Payment recorded.')"
-                        class="w-full py-4 bg-green-600 text-white font-black rounded-xl shadow-lg shadow-green-100 hover:bg-green-700 transition-all uppercase text-xs tracking-widest active:scale-95">Mark as Paid</button>
-                </div>
+                <button onclick="confirmAction('Payment of ₹500 recorded.')"
+                    class="w-full py-4 bg-green-600 text-white font-bold rounded-xl shadow-lg shadow-green-100 hover:bg-green-700 transition-all">Mark
+                    as Paid</button>
             </div>
         </div>
     </div>
 
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const backdrop = document.getElementById('sidebar-backdrop');
-            
-            if (sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                backdrop.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                backdrop.classList.add('hidden');
-            }
-        }
-
         function toggleModal(id, name) {
             const container = document.getElementById('modal-container');
             const target = document.getElementById(id);
 
+            // Set dynamic names in modals
             if (name) {
                 if (id === 'notesModal') document.getElementById('notesAthleteName').innerText = name;
                 if (id === 'counsellorModal') document.getElementById('assignAthleteName').innerText = name;
+                if (id === 'sendToDeptModal') document.getElementById('sendToDeptAthleteName').innerText = name;
                 if (id === 'paymentModal') document.getElementById('paymentAthleteName').innerText = name;
             }
 
             closeAllModals();
-            container.classList.remove('hidden');
-            container.classList.add('flex');
+            container.classList.add('modal-active');
             target.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
         }
 
         function closeAllModals() {
-            document.getElementById('modal-container').classList.add('hidden');
-            document.getElementById('modal-container').classList.remove('flex');
-            ['counsellorModal', 'paymentModal', 'notesModal'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('hidden');
+            document.getElementById('modal-container').classList.remove('modal-active');
+            ['counsellorModal', 'paymentModal', 'notesModal', 'sendToDeptModal'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
             });
-            document.body.style.overflow = '';
         }
 
         function confirmAction(msg) {
@@ -345,13 +490,13 @@
             closeAllModals();
         }
 
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) {
-                document.getElementById('sidebar').classList.remove('-translate-x-full');
-                document.getElementById('sidebar-backdrop').classList.add('hidden');
-            } else {
-                document.getElementById('sidebar').classList.add('-translate-x-full');
-            }
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('mobile-sidebar').classList.remove('-translate-x-full');
+            document.getElementById('sidebar-backdrop').classList.remove('hidden');
+        });
+        document.getElementById('sidebar-backdrop').addEventListener('click', () => {
+            document.getElementById('mobile-sidebar').classList.add('-translate-x-full');
+            document.getElementById('sidebar-backdrop').classList.add('hidden');
         });
     </script>
 </body>

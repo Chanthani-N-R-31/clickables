@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Link Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+    </style>
+</head>
+
+<body class="bg-[#f0f4f8] text-[#0a192f] antialiased flex h-screen overflow-hidden relative">
+
+    <!-- Sidebar -->
+    <aside class="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 z-20">
+        <div class="p-8 border-b border-slate-50">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-[#005af5] text-3xl">⚡</span>
+                <div class="font-black text-xl tracking-tighter text-[#1e293b] leading-tight uppercase">Sports Science<br>Engineer</div>
+            </div>
+            <p class="text-[0.65rem] text-slate-400 uppercase font-black tracking-widest">
+                Logged in as: <span class="text-amber-500 font-bold">Coordinator</span>
+            </p>
+        </div>
+        <nav class="flex-1 px-4 space-y-1">
+            <div class="my-4 border-t border-slate-100"></div>
+            <a href="intern_co-or_mentor_managemrnt.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">📋</span> All Interns
+            </a>
+            <a href="intern_co_ord_batch_link.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 shadow-sm rounded-xl transition-colors">
+                <span class="mr-3">🔗</span> Batch Link
+            </a>
+            <a href="intern_co_ord_assessments.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">📝</span> Assessments
+            </a>
+            <a href="intern_co_ord_feedback.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">💬</span> Feedback
+            </a>
+            <a href="intern_co_ord_manage_holidays.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">📅</span> Manage Holidays
+            </a>
+            <a href="intern_co_ord_college.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">🏫</span> College
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        <!-- Header -->
+        <header
+            class="bg-white z-10 relative p-4 flex justify-between items-center border-b border-slate-200 shadow-sm px-8">
+            <div class="flex items-center gap-3">
+                <button id="mobile-menu-btn" class="md:hidden p-2 text-slate-500 hover:text-blue-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <span class="text-blue-500 text-2xl">⚡</span>
+                <h1 id="page-title" class="font-black text-slate-800 tracking-tighter text-sm uppercase">Internship Coordinator</h1>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-auto p-6 space-y-6">
+
+    <!-- BATCH LINK MODULE START -->
+    <div id="view-batch_link" class="max-w-3xl mx-auto space-y-6">
+
+        <!-- Section 1: Generate Link -->
+        <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6">
+            <h2 class="text-lg font-bold text-slate-800 mb-4">Generate batch link</h2>
+            <form onsubmit="generateBatchLink(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Batch start date</label>
+                    <input type="date" id="batch_start_date" required
+                        class="w-full max-w-xs px-4 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-shadow shadow-sm">
+                    <p class="text-slate-500 text-xs mt-1 font-medium">Month and year from this date are used for the
+                        link (e.g. 001/03/26).</p>
+                </div>
+                <button type="submit"
+                    class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-sm transition-colors">Generate
+                    link</button>
+            </form>
+
+            <!-- Success Message / Generated Link Display -->
+            <div id="generated-link-container"
+                class="hidden mt-6 p-5 bg-amber-50 border border-amber-200 rounded-xl shadow-sm">
+                <p class="text-amber-800 font-semibold mb-3">Share this registration link:</p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <input type="text" id="batchUrl" readonly
+                        class="flex-1 min-w-0 px-3 py-2 bg-white border border-amber-300 rounded-lg text-amber-900 text-sm font-mono shadow-sm focus:outline-none">
+                    <button type="button" onclick="copyBatchUrl()" id="copy-btn"
+                        class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-sm transition-colors whitespace-nowrap">Copy
+                        link</button>
+                    <button type="button" onclick="removeGeneratedLink()"
+                        class="px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-lg transition-colors whitespace-nowrap border border-slate-300 shadow-sm">Remove
+                        link</button>
+                </div>
+                <p class="text-amber-700/80 text-xs mt-3 font-medium">Interns registering via this link will be assigned
+                    to batch 001/<span id="slug-display"></span>. When 50 registrations are reached, the next intern is
+                    automatically assigned to 002/..., and so on.</p>
+            </div>
+        </div>
+
+        <!-- Section 2: Usage Table -->
+        <div class="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+            <div class="p-5 border-b border-slate-100 bg-[#f8fafc]">
+                <h2 class="text-lg font-bold text-slate-800">Batch link usage (by batch code)</h2>
+                <p class="text-slate-500 text-sm mt-1 leading-relaxed">
+                    Interns registered via batch links appear under codes 001/MM/YY, 002/MM/YY, etc. (max 50 per batch).
+                    Click "Start Batch" to set Day 1 of the 24-day program for all interns in that batch.
+                </p>
+            </div>
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-sm text-left whitespace-nowrap">
+                    <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                        <tr>
+                            <th class="p-4">Batch code</th>
+                            <th class="p-4">Registrations</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4">Start Batch</th>
+                        </tr>
+                    </thead>
+                    <tbody id="batch-usage-body" class="divide-y divide-slate-100">
+                        <!-- Data injected by renderBatchLink() -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+        </div>
+    </main>
+
+    <!-- Floating Navigation Buttons -->
+    <div class="fixed bottom-6 right-6 flex items-center gap-3 z-[60]">
+        <a href="INTERN-CO-ORDINATOR.drawio.html"
+            class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-full shadow-lg hover:bg-slate-50 transition-all hover:scale-110 active:scale-95">
+            <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </a>
+        <a href="IT.drawio (1).html"
+            class="w-12 h-12 flex items-center justify-center bg-[#005af5] rounded-full shadow-lg hover:bg-blue-600 transition-all hover:scale-110 active:scale-95 text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 0 001-1v-4a1 0 011-1h2a1 0 011 1v4a1 0 001 1m-6 0h6" />
+            </svg>
+        </a>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50"></div>
+
+    <script>
+        // Mock Data Storage
+        let batchLinkUsage = [
+            { code: '001/03/26', registrations: 50, startDate: '2026-03-02' },
+            { code: '002/03/26', registrations: 12, startDate: null }
+        ];
+
+        /**
+         * Renders the batch usage table
+         */
+        function renderBatchLink() {
+            const body = document.getElementById('batch-usage-body');
+            if (!body) return;
+
+            body.innerHTML = batchLinkUsage.map(b => {
+                const isFull = b.registrations >= 50;
+                return `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-4 font-mono font-semibold text-slate-800 bg-slate-50/50">${b.code}</td>
+                    <td class="p-4 text-slate-700 font-medium">${b.registrations} / 50</td>
+                    <td class="p-4">
+                        ${isFull ?
+                        `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-600 border border-red-200">Full</span>` :
+                        `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">Open</span>`
+                    }
+                    </td>
+                    <td class="p-4">
+                        ${b.startDate ?
+                        `<span class="text-emerald-600 font-semibold text-xs inline-flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Started ${new Date(b.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>` :
+                        `<button onclick="startBatch('${b.code}')" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg text-xs transition-colors shadow-sm">Start Batch</button>`
+                    }
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        /**
+         * Logic to generate the URL slug based on the selected date
+         */
+        function generateBatchLink(e) {
+            e.preventDefault();
+            const dateVal = document.getElementById('batch_start_date').value;
+            if (!dateVal) return;
+
+            const date = new Date(dateVal);
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const yy = String(date.getFullYear()).slice(-2);
+            const slug = `${mm}/${yy}`;
+
+            document.getElementById('slug-display').textContent = slug;
+            document.getElementById('batchUrl').value = `https://ilitmysport.com/register.html?batch=${slug}`;
+            document.getElementById('generated-link-container').classList.remove('hidden');
+
+            showToast("Batch link generated.", "success");
+        }
+
+        function removeGeneratedLink() {
+            document.getElementById('generated-link-container').classList.add('hidden');
+        }
+
+        /**
+         * Copy URL to clipboard with UI feedback
+         */
+        function copyBatchUrl() {
+            const el = document.getElementById('batchUrl');
+            el.select();
+            document.execCommand('copy');
+
+            const btn = document.getElementById('copy-btn');
+            const originalText = btn.textContent;
+            btn.textContent = "Copied!";
+            btn.classList.replace('bg-amber-500', 'bg-emerald-500');
+
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.classList.replace('bg-emerald-500', 'bg-amber-500');
+            }, 2000);
+
+            showToast("Link copied to clipboard!", "success");
+        }
+
+        /**
+         * Sets the start date for a specific batch
+         */
+        function startBatch(code) {
+            const batch = batchLinkUsage.find(b => b.code === code);
+            if (batch) {
+                batch.startDate = new Date().toISOString().split('T')[0];
+                showToast(`Batch ${code} started. Day 1 set to today.`, "success");
+                renderBatchLink();
+            }
+        }
+
+        /**
+         * Helper: Show visual feedback
+         */
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-blue-500';
+            toast.className = `mb-4 px-6 py-3 text-white rounded-xl shadow-xl transition-all duration-300 transform translate-y-10 opacity-0 font-semibold text-sm ${bgColor}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-y-10', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize table on load
+        document.addEventListener('DOMContentLoaded', renderBatchLink);
+    </script>
+</body>
+
+</html>

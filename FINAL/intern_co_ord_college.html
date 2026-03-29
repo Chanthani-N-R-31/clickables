@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Colleges | Internship Coordinator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7fa;
+        }
+
+
+        .input-field {
+            width: 100%;
+            padding: 0.625rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            outline: none;
+            transition: all 0.2s;
+            background-color: #fff;
+        }
+
+        .input-field:focus {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .college-row:hover {
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+
+<body class="bg-[#f4f7fa] text-[#0a192f] antialiased flex h-screen overflow-hidden relative">
+
+    <!-- Sidebar -->
+    <aside class="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 z-20">
+        <div class="p-8 border-b border-slate-50">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-[#005af5] text-3xl">⚡</span>
+                <div class="font-black text-xl tracking-tighter text-[#1e293b] leading-tight uppercase">Sports Science<br>Engineer</div>
+            </div>
+            <p class="text-[0.65rem] text-slate-400 uppercase font-black tracking-widest">
+                Logged in as: <span class="text-amber-500 font-bold">Coordinator</span>
+            </p>
+        </div>
+        <nav class="flex-1 px-4 space-y-1">
+            <div class="my-4 border-t border-slate-100"></div>
+            <a href="intern_co-or_mentor_managemrnt.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">📋</span> All Interns
+            </a>
+            <a href="intern_co_ord_batch_link.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">🔗</span> Batch Link
+            </a>
+            <a href="intern_co_ord_assessments.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">📝</span> Assessments
+            </a>
+            <a href="intern_co_ord_feedback.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">💬</span> Feedback
+            </a>
+            <a href="intern_co_ord_manage_holidays.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">📅</span> Manage Holidays
+            </a>
+            <a href="intern_co_ord_college.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 shadow-sm rounded-xl transition-colors">
+                <span class="mr-3">🏫</span> College
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        <header id="main-header"
+            class="bg-white/40 backdrop-blur-sm z-10 relative p-6 flex justify-between items-center border-b border-slate-200/60">
+            <div id="header-text-container">
+                <h1 id="page-title" class="text-2xl font-black text-slate-800 tracking-tight">College</h1>
+                <p id="page-subtitle" class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                    Manage colleges and their Internship Coordinator details</p>
+            </div>
+            <div id="header-action-container">
+                <span
+                    class="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-[0.65rem] font-black uppercase border border-blue-100 shadow-sm">—
+                    COORDINATOR</span>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-auto p-6 space-y-6">
+
+            <!-- VIEW: Manage Colleges -->
+            <div id="view-college" class="max-w-6xl mx-auto space-y-6">
+
+                <!-- Edit College Card (Conditional UI) -->
+                <div id="edit-college-card"
+                    class="hidden bg-white border border-amber-200 shadow-sm rounded-2xl overflow-hidden ring-1 ring-amber-500/10 mb-6">
+                    <div class="p-5 border-b border-amber-100 bg-amber-50/30 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-bold text-slate-800">Edit College</h2>
+                            <p class="text-slate-500 text-sm mt-1">Update college name and Internship Coordinator
+                                details.</p>
+                        </div>
+                        <button onclick="hideEditForm()"
+                            class="text-slate-500 hover:text-slate-800 text-sm font-semibold transition-colors">Cancel</button>
+                    </div>
+                    <form onsubmit="handleUpdateCollege(event)" class="p-6 space-y-4">
+                        <input type="hidden" id="edit-id">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">College name</label>
+                            <input type="text" id="edit-name" required class="input-field shadow-sm">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Coordinator name</label>
+                                <input type="text" id="edit-coord" class="input-field shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Coordinator phone
+                                    (+91)</label>
+                                <input type="text" id="edit-phone" maxlength="10" class="input-field shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Coordinator email</label>
+                                <input type="email" id="edit-email" class="input-field shadow-sm">
+                            </div>
+                        </div>
+                        <button type="submit"
+                            class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-sm rounded-lg transition-colors text-sm">Update
+                            College</button>
+                    </form>
+                </div>
+
+                <!-- Add College Card -->
+                <div id="add-college-card"
+                    class="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden mb-6">
+                    <div class="p-5 border-b border-slate-100 bg-slate-50/50">
+                        <h2 class="text-lg font-bold text-slate-800">Add College</h2>
+                        <p class="text-slate-500 text-sm mt-1">Enter college name and Internship Coordinator details.
+                            New entries will appear in the registration dropdown.</p>
+                    </div>
+                    <form onsubmit="handleAddCollege(event)" class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">College name</label>
+                            <input type="text" id="add-name" required placeholder="e.g. Hosmat College of Physiotherapy"
+                                class="input-field shadow-sm">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Coordinator name</label>
+                                <input type="text" id="add-coord" placeholder="Name" class="input-field shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Coordinator phone
+                                    (+91)</label>
+                                <input type="text" id="add-phone" maxlength="10" placeholder="10 digits"
+                                    class="input-field shadow-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Coordinator email</label>
+                                <input type="email" id="add-email" placeholder="email@example.com"
+                                    class="input-field shadow-sm">
+                            </div>
+                        </div>
+                        <button type="submit"
+                            class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold shadow-sm rounded-lg transition-colors text-sm">Add
+                            College</button>
+                    </form>
+                </div>
+
+                <!-- Colleges List Table -->
+                <div class="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+                    <div class="p-5 border-b border-slate-100 bg-slate-50/50">
+                        <h2 class="text-lg font-bold text-slate-800">Colleges list</h2>
+                        <p class="text-slate-500 text-sm mt-1">Pre-loaded from registration data; new entries added
+                            above appear here and on the registration page.</p>
+                    </div>
+                    <div class="overflow-x-auto w-full">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead
+                                class="bg-slate-50 text-slate-400 font-bold border-b border-slate-200 uppercase text-[10px] tracking-widest">
+                                <tr>
+                                    <th class="p-5">College</th>
+                                    <th class="p-5">Coordinator name</th>
+                                    <th class="p-5">Phone (+91)</th>
+                                    <th class="p-5">Email</th>
+                                    <th class="p-5 text-right w-24">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="collegesTableBody" class="divide-y divide-slate-100">
+                                <!-- College list populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+    
+    <!-- Floating Navigation Buttons -->
+    <div class="fixed bottom-6 right-6 flex items-center gap-3 z-[60]">
+        <a href="INTERN-CO-ORDINATOR.drawio.html"
+            class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-full shadow-lg hover:bg-slate-50 transition-all hover:scale-110 active:scale-95">
+            <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </a>
+        <a href="IT.drawio (1).html"
+            class="w-12 h-12 flex items-center justify-center bg-[#005af5] rounded-full shadow-lg hover:bg-blue-600 transition-all hover:scale-110 active:scale-95 text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+        </a>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50"></div>
+
+    <script>
+        // --- DATA STATE ---
+        let colleges = [
+            { id: 1, name: 'Hosmat College of Physiotherapy', coordinator: 'Annie', phone: '8660781904', email: 'hhei.bng@gmail.com' },
+            { id: 2, name: 'The Oxford College of Physiotherapy', coordinator: 'Janani Radhakrishnan', phone: '8825934550', email: 'jananiradhakrishnan11@gmail.com' },
+            { id: 3, name: 'Acharya Institute', coordinator: 'Dr. Meghana (PT)', phone: '8617449290', email: '—' },
+            { id: 4, name: 'R V College of Physiotherapy', coordinator: '—', phone: '—', email: '—' }
+        ];
+
+        // --- NAVIGATION ---
+        function switchTab(view) {
+            // Simplified for this view, in a full portal would handle show/hide
+            console.log("Switching to", view);
+        }
+
+        // --- COLLEGE LOGIC ---
+        function renderCollegeTable() {
+            const tbody = document.getElementById('collegesTableBody');
+            tbody.innerHTML = colleges.sort((a, b) => a.name.localeCompare(b.name)).map(c => `
+                <tr class="college-row transition-colors">
+                    <td class="p-5 text-slate-800 font-bold bg-slate-50/50 text-[13px] tracking-tight">${c.name}</td>
+                    <td class="p-5 text-slate-600 font-medium">${c.coordinator || '—'}</td>
+                    <td class="p-5 text-slate-600 font-medium">${c.phone || '—'}</td>
+                    <td class="p-5 text-slate-600 font-medium">${c.email || '—'}</td>
+                    <td class="p-5 text-right">
+                        <button onclick="showEditForm(${c.id})" class="text-blue-600 font-black text-[10px] uppercase tracking-widest hover:underline">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function handleAddCollege(e) {
+            e.preventDefault();
+            const name = document.getElementById('add-name').value;
+            const coord = document.getElementById('add-coord').value;
+            const phone = document.getElementById('add-phone').value;
+            const email = document.getElementById('add-email').value;
+
+            const newId = colleges.length ? Math.max(...colleges.map(c => c.id)) + 1 : 1;
+            colleges.push({ id: newId, name, coordinator: coord, phone, email });
+
+            renderCollegeTable();
+            e.target.reset();
+            showToast('College added successfully', 'success');
+        }
+
+        function showEditForm(id) {
+            const college = colleges.find(c => c.id === id);
+            if (!college) return;
+
+            document.getElementById('edit-college-card').classList.remove('hidden');
+            document.getElementById('add-college-card').classList.add('hidden');
+
+            document.getElementById('edit-id').value = college.id;
+            document.getElementById('edit-name').value = college.name;
+            document.getElementById('edit-coord').value = college.coordinator === '—' ? '' : college.coordinator;
+            document.getElementById('edit-phone').value = college.phone === '—' ? '' : college.phone;
+            document.getElementById('edit-email').value = college.email === '—' ? '' : college.email;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function hideEditForm() {
+            document.getElementById('edit-college-card').classList.add('hidden');
+            document.getElementById('add-college-card').classList.remove('hidden');
+        }
+
+        function handleUpdateCollege(e) {
+            e.preventDefault();
+            const id = parseInt(document.getElementById('edit-id').value);
+            const name = document.getElementById('edit-name').value;
+            const coord = document.getElementById('edit-coord').value;
+            const phone = document.getElementById('edit-phone').value;
+            const email = document.getElementById('edit-email').value;
+
+            const index = colleges.findIndex(c => c.id === id);
+            if (index !== -1) {
+                colleges[index] = { id, name, coordinator: coord, phone, email };
+                renderCollegeTable();
+                hideEditForm();
+                showToast('College updated successfully', 'success');
+            }
+        }
+
+        // --- UTILS ---
+        function showToast(msg, type) {
+            const container = document.getElementById('toast-container');
+            const t = document.createElement('div');
+            const colors = { success: 'bg-emerald-500', error: 'bg-red-500', info: 'bg-blue-500' };
+            t.className = `mb-4 px-6 py-3 rounded-xl shadow-xl text-white font-bold text-sm transform transition-all duration-300 translate-y-10 opacity-0 ${colors[type] || colors.info}`;
+            t.textContent = msg;
+            container.appendChild(t);
+
+            setTimeout(() => t.classList.remove('translate-y-10', 'opacity-0'), 10);
+            setTimeout(() => {
+                t.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => t.remove(), 300);
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCollegeTable();
+        });
+    </script>
+</body>
+
+</html>

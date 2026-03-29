@@ -3,323 +3,566 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
     <title>Scheduler – Central Scheduler</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
 
-        .sidebar-transition {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
         ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
+            width: 6px;
+            height: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: transparent;
+            background: #f1f5f9;
+            border-radius: 8px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
 
         .fc-theme-standard td,
-        .fc-theme-standard th {
-            border-color: #f1f5f9;
+        .fc-theme-standard th,
+        .fc-theme-standard .fc-scrollgrid {
+            border-color: #e2e8f0;
         }
 
         .fc .fc-button-primary {
             background: #005af5;
-            border: none;
-            font-weight: 700;
-            border-radius: 10px;
-            padding: 8px 16px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            border-color: #005af5;
+            font-weight: 600;
+            border-radius: 8px;
         }
 
-        .fc .fc-toolbar-title {
-            font-size: 1.1rem !important;
-            font-weight: 800;
-            color: #1e293b;
+        .fc .fc-col-header-cell-cushion,
+        .fc .fc-daygrid-day-number {
+            color: #0a192f;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .fc-day-today {
+            background: rgba(0, 90, 245, 0.04) !important;
         }
 
         .fc-event {
+            cursor: pointer;
             border: none !important;
             border-radius: 6px !important;
-            padding: 2px 4px;
-            font-weight: 600;
+            padding: 4px;
+        }
+
+        .scheduler-tab.tab-active {
+            background: #005af5;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 90, 245, 0.2);
+        }
+
+        /* Modal Transitions */
+        .modal-active {
+            display: flex !important;
         }
 
         .animate-in {
-            animation: slideUp 0.3s ease-out forwards;
+            animation: slideUp 0.2s ease-out forwards;
         }
 
         @keyframes slideUp {
-            from { transform: translateY(15px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from {
+                transform: translateY(10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
+        /* Booking Slot Buttons */
         .slot-btn {
             border: 1px solid #e2e8f0;
             border-radius: 12px;
-            padding: 12px 8px;
+            padding: 14px 8px;
             text-align: center;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 700;
             background: white;
             transition: all 0.2s;
+            color: #1e293b;
+        }
+
+        .slot-btn:hover:not(.disabled) {
+            border-color: #3b82f6;
+            background: #f0f7ff;
         }
 
         .slot-btn.selected {
-            border: 2px solid #005af5;
-            background: #f0f7ff;
-            color: #005af5;
+            border: 2px solid #3b82f6;
+            background: #eff6ff;
+            color: #1d4ed8;
         }
 
         .slot-btn.disabled {
-            opacity: 0.3;
+            opacity: 0.25;
             background: #f8fafc;
             cursor: not-allowed;
+            font-weight: 500;
         }
 
-        @media (max-width: 640px) {
-            .fc-header-toolbar {
-                display: flex;
-                flex-direction: column;
-                gap: 1rem;
-            }
+        /* Event Colors */
+        .type-physio {
+            background-color: #2563eb !important;
+        }
+
+        .type-snc {
+            background-color: #059669 !important;
+        }
+
+        .type-counselling {
+            background-color: #7c3aed !important;
+        }
+
+        /* Tan Package Box */
+        .package-box {
+            background-color: #d8c3b4;
+            border: 1px solid #cbb6a6;
+            border-radius: 12px;
+            padding: 20px;
         }
     </style>
 </head>
 
-<body class="bg-[#f8fafc] text-[#1e293b] antialiased flex h-screen overflow-hidden relative">
+<body class="bg-[#f8fafc] text-[#0a192f] antialiased flex h-screen overflow-hidden relative">
 
     <!-- Global Navigation -->
-    <div class="fixed bottom-6 right-6 flex gap-3 z-[100]">
-        <button onclick="window.history.back()" class="flex items-center justify-center w-12 h-12 bg-white/90 backdrop-blur-md border border-slate-200 rounded-full shadow-lg hover:bg-white transition-all active:scale-95 group">
-            <i class="ph ph-arrow-left text-xl text-slate-600 group-hover:text-blue-600"></i>
-        </button>
-        <a href="IT.drawio (1).html" class="flex items-center justify-center w-12 h-12 bg-blue-600 border border-blue-500 rounded-full shadow-lg hover:bg-blue-700 transition-all active:scale-95 group">
-            <i class="ph ph-house text-xl text-white"></i>
+    <div class="fixed bottom-6 right-6 flex gap-4 z-[9999]">
+        <a href="FRONT DESK.drawio.html"
+            class="flex items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-md border border-slate-200 rounded-full shadow-xl hover:bg-white transition-all active:scale-95 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-slate-600 group-hover:text-blue-600" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </a>
+        <a href="IT.drawio (1).html"
+            class="flex items-center justify-center w-14 h-14 bg-blue-600 border border-blue-500 rounded-full shadow-xl hover:bg-blue-700 transition-all active:scale-95 group">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
         </a>
     </div>
 
-    <!-- Sidebar Backdrop -->
-    <div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] hidden transition-opacity duration-300 opacity-0"></div>
-
     <!-- Sidebar -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-72 bg-white border-r border-slate-200 z-[70] transform -translate-x-full lg:relative lg:translate-x-0 sidebar-transition flex flex-col shadow-2xl lg:shadow-none">
-        <div class="p-6 border-b border-slate-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
-                    <i class="ph ph-calendar-bold text-xl"></i>
-                </div>
+    <aside id="mobile-sidebar"
+        class="w-72 bg-white/80 backdrop-blur-2xl border-r border-slate-200 shadow-xl z-50 fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-300 ease-in-out flex flex-col flex-shrink-0">
+        <div class="p-8 border-b border-slate-50">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-[#005af5] text-3xl">⚡</span>
+                <div class="font-black text-xl tracking-tighter text-[#1e293b] leading-tight uppercase">Sports Science<br>Engineer</div>
+            </div>
+            <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl border border-slate-100">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-200">A</div>
                 <div>
-                    <h2 class="text-sm font-bold tracking-tight text-slate-900">Sports Science</h2>
-                    <p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider">Master Scheduler</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Logged in</p>
+                    <p class="text-xs font-bold text-slate-800">Admin Portal</p>
                 </div>
             </div>
-            <button id="close-sidebar" class="lg:hidden p-2 text-slate-400 hover:text-slate-600 transition-colors">
-                <i class="ph ph-x text-xl"></i>
-            </button>
         </div>
 
-        <div class="p-6 space-y-8 flex-1 overflow-y-auto">
-            <div class="space-y-4">
-                <p class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest px-1">View Settings</p>
-                <div class="space-y-3">
-                    <label class="block text-[0.65rem] font-bold text-slate-500 uppercase tracking-widest px-1">Department</label>
-                    <select class="w-full bg-slate-50 border border-slate-200 text-sm font-semibold rounded-xl p-3 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all">
-                        <option>All Departments</option>
-                        <option>Physiotherapy</option>
-                        <option>S & C</option>
-                        <option>Counselling</option>
-                    </select>
-                </div>
-            </div>
+        <nav class="p-6 space-y-2 flex-1 overflow-y-auto">
+            <a href="admin_dashboard.html" class="flex items-center gap-4 px-4 py-4 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-[2rem] transition-all font-black uppercase tracking-widest text-[10px] group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+                Dashboard Hub
+            </a>
+            <a href="admin_intern.html" class="flex items-center gap-4 px-4 py-4 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-[2rem] transition-all font-black uppercase tracking-widest text-[10px] group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                Intern Registry
+            </a>
+            <a href="admin_calender.html" class="flex items-center gap-4 px-4 py-4 bg-blue-600 text-white rounded-[2rem] shadow-xl shadow-blue-200 transition-all font-black uppercase tracking-widest text-[10px]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                Scheduler
+            </a>
+            <a href="billing.html" class="flex items-center gap-4 px-4 py-4 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-[2rem] transition-all font-black uppercase tracking-widest text-[10px] group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                Billing
+            </a>
+            <a href="admin_attendance.html" class="flex items-center gap-4 px-4 py-4 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-[2rem] transition-all font-black uppercase tracking-widest text-[10px] group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                My Attendance
+            </a>
+        </nav>
 
-            <nav class="space-y-1">
-                <p class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest px-1 mb-4">Navigation</p>
-                <a href="admin_dashboard.html" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all font-semibold text-sm">
-                    <i class="ph ph-layout"></i> Dashboard
-                </a>
-                <a href="admin_attendance.html" class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-50 rounded-xl transition-all font-semibold text-sm">
-                    <i class="ph ph-clock"></i> Attendance
-                </a>
-            </nav>
+        <div class="p-6 border-t border-slate-50">
+            <button class="w-full flex items-center justify-center gap-3 px-4 py-4 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white rounded-[2rem] transition-all font-black uppercase tracking-widest text-[10px]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Logout
+            </button>
         </div>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        <header class="h-20 flex items-center justify-between px-6 md:px-10 bg-white/50 backdrop-blur-md border-b border-slate-200 z-50">
-            <div class="flex items-center gap-4">
-                <button id="toggle-sidebar" class="lg:hidden p-2 bg-white rounded-xl border border-slate-200 shadow-sm text-slate-600">
-                    <i class="ph ph-list text-xl"></i>
-                </button>
-                <h1 class="text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 tracking-tight">Schedule</h1>
+    <main class="flex-1 flex flex-col h-full min-w-0">
+        <header
+            class="h-20 border-b border-slate-200 flex items-center justify-between px-8 bg-white z-20 flex-shrink-0">
+            <div class="flex items-center gap-8">
+                <h2 class="text-2xl font-bold text-[#0a192f] tracking-tight">Master Schedule</h2>
+                <nav class="flex bg-slate-100 rounded-lg p-1 border border-slate-200">
+                    <button
+                        class="scheduler-tab tab-active px-4 py-1.5 text-sm font-medium rounded-md transition-all">Clinic
+                        Master View</button>
+                    <button
+                        class="scheduler-tab px-4 py-1.5 text-sm font-medium rounded-md transition-all text-slate-500 hover:text-blue-600">Department
+                        View</button>
+                </nav>
             </div>
-            <button onclick="toggleModal('bookingModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-6 py-2.5 rounded-xl text-xs md:text-sm font-bold shadow-lg shadow-blue-200 transition-all flex items-center gap-2 active:scale-95">
-                <i class="ph ph-plus-bold"></i> <span class="hidden sm:inline">New Booking</span>
+            <button onclick="toggleModal('bookingModal')"
+                class="bg-[#005af5] hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 transition-all flex items-center gap-2">
+                <i class="ph ph-plus-bold"></i> New Booking
             </button>
         </header>
 
-        <div class="flex-1 flex flex-col p-4 md:p-8 overflow-hidden">
-            <!-- Calendar Container -->
-            <div class="flex-1 bg-white glass-card rounded-[2rem] border border-slate-200/60 shadow-xl shadow-slate-200/40 flex flex-col min-h-0">
-                <div class="flex items-center justify-between p-6 border-b border-slate-100 flex-shrink-0">
-                    <div class="flex gap-4 overflow-x-auto no-scrollbar pb-1">
-                        <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-blue-600"></span><span class="text-[0.65rem] font-black uppercase text-slate-400">Physio</span></span>
-                        <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-emerald-600"></span><span class="text-[0.65rem] font-black uppercase text-slate-400">S&C</span></span>
-                        <span class="flex items-center gap-1.5 whitespace-nowrap"><span class="w-2 h-2 rounded-full bg-purple-600"></span><span class="text-[0.65rem] font-black uppercase text-slate-400">Counsel</span></span>
-                    </div>
+        <div class="flex-1 p-6 overflow-hidden flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#2563eb]"></span>
+                        Physio</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#059669]"></span>
+                        S&C</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-[#7c3aed]"></span>
+                        Counselling</span>
                 </div>
-                <div id="calendar" class="flex-1 p-4 overflow-y-auto"></div>
+                <div class="flex gap-1 bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
+                    <button id="viewWeek"
+                        class="px-4 py-1 text-xs font-bold rounded hover:bg-slate-50 text-blue-600 bg-blue-50">Week</button>
+                    <button id="viewDay"
+                        class="px-4 py-1 text-xs font-bold rounded hover:bg-slate-50 text-slate-500">Day</button>
+                </div>
             </div>
+            <div id="calendar"
+                class="flex-1 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-4"></div>
         </div>
     </main>
 
     <!-- Modal Container -->
-    <div id="modal-container" class="fixed inset-0 z-[110] hidden items-center justify-center p-4 sm:p-6 overflow-y-auto">
+    <div id="modal-container" class="fixed inset-0 z-[60] hidden items-center justify-center p-4">
         <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm" onclick="closeAllModals()"></div>
 
-        <!-- Booking Modal -->
-        <div id="bookingModal" class="relative bg-white border border-slate-200 rounded-[2.5rem] shadow-2xl w-full max-w-xl hidden flex-col overflow-hidden animate-in">
-            <div class="p-8 space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">New Booking</h3>
-                    <button onclick="closeAllModals()" class="p-2 bg-slate-50 text-slate-400 rounded-full hover:text-slate-600 transition-colors"><i class="ph ph-x text-lg"></i></button>
+        <!-- NEW BOOKING MODAL (image_d6e085.png) -->
+        <div id="bookingModal"
+            class="relative bg-white border border-slate-200 rounded-[32px] shadow-2xl w-full max-w-xl hidden flex-col overflow-hidden animate-in">
+            <div class="p-8 space-y-6 max-h-[90vh] overflow-y-auto">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Date</label>
+                    <div class="relative">
+                        <input type="text" value="24-03-2026"
+                            class="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 outline-none">
+                        <i
+                            class="ph ph-calendar-blank absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-sm font-semibold text-slate-700 block mb-1">Time slot</label>
+                    <p class="text-[10px] text-slate-500 leading-tight mb-4">
+                        Sessions from 9:00. Same day: e.g. 9:00 AM slot only if you book on or before 8:19 AM (41 min
+                        before). Select a department for session length.
+                    </p>
+
+                    <div class="grid grid-cols-3 gap-3">
+                        <button class="slot-btn disabled">11:00 – 11:30</button>
+                        <button class="slot-btn disabled">11:40 – 12:10</button>
+                        <button class="slot-btn disabled">12:20 – 12:50</button>
+                        <button class="slot-btn disabled">13:00 – 13:30</button>
+                        <button class="slot-btn disabled">13:40 – 14:10</button>
+                        <button class="slot-btn selected">14:20 – 14:50</button>
+                        <button class="slot-btn">15:00 – 15:30</button>
+                        <button class="slot-btn">15:40 – 16:10</button>
+                        <button class="slot-btn">16:20 – 16:50</button>
+                        <button class="slot-btn">17:00 – 17:30</button>
+                        <button class="slot-btn">17:40 – 18:10</button>
+                        <button class="slot-btn">18:20 – 18:50</button>
+                        <button class="slot-btn">19:00 – 19:30</button>
+                        <button class="slot-btn">19:40 – 20:10</button>
+                        <button class="slot-btn">20:20 – 20:50</button>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 italic font-medium">Tap a slot to set start time; label
+                        shows session start — end.</p>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex items-start gap-3">
+                    <input type="checkbox"
+                        class="mt-1 w-4 h-4 text-amber-600 rounded border-amber-300 focus:ring-amber-500">
+                    <p class="text-xs text-amber-800 font-medium leading-relaxed">
+                        <span class="font-bold text-amber-900">Unlock closed slots</span> (Front desk / Admin): allow
+                        booking after the same-day deadline when you need to override.
+                    </p>
                 </div>
 
                 <div class="space-y-4">
-                    <div class="space-y-2">
-                        <label class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest ml-1">Appointment Date</label>
-                        <div class="relative group">
-                            <i class="ph ph-calendar-blank absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600"></i>
-                            <input type="text" value="24-03-2026" class="w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none focus:ring-4 focus:ring-blue-500/10 transition-all">
-                        </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Athlete</label>
+                        <select
+                            class="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 outline-none appearance-none cursor-pointer">
+                            <option>— Search / Select —</option>
+                            <option>Karan Nair</option>
+                            <option>Amit Sharma</option>
+                        </select>
                     </div>
-
-                    <div class="space-y-2">
-                        <label class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest ml-1">Available Slots</label>
-                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                            <button class="slot-btn disabled">09:00</button>
-                            <button class="slot-btn disabled">10:00</button>
-                            <button class="slot-btn selected">11:00</button>
-                            <button class="slot-btn">12:00</button>
-                            <button class="slot-btn">13:00</button>
-                            <button class="slot-btn">14:00</button>
-                            <button class="slot-btn">15:00</button>
-                            <button class="slot-btn">16:00</button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="space-y-2">
-                            <label class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest ml-1">Department</label>
-                            <select class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none appearance-none cursor-pointer">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Department</label>
+                            <select
+                                class="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 outline-none">
+                                <option>— Select —</option>
                                 <option>Physiotherapy</option>
                                 <option>S & C</option>
                             </select>
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest ml-1">Specialist</label>
-                            <select class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-900 outline-none appearance-none cursor-pointer">
-                                <option>Dr. John Smith</option>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">Specialist</label>
+                            <select
+                                class="w-full px-4 py-4 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-800 outline-none">
+                                <option>— Select —</option>
                                 <option>Anchalsingh</option>
+                                <option>Dr. John Smith</option>
                             </select>
                         </div>
                     </div>
                 </div>
+                <p class="text-[10px] text-slate-400 text-center font-semibold uppercase tracking-wider">Busy
+                    specialists are disabled for strict conflict prevention.</p>
 
-                <div class="flex gap-3 pt-6">
-                    <button onclick="closeAllModals()" class="flex-1 py-4 bg-slate-100 text-slate-400 font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-slate-200 transition-all">Cancel</button>
-                    <button onclick="closeAllModals()" class="flex-[2] py-4 bg-blue-600 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all active:scale-[0.98]">Confirm Booking</button>
+                <div class="flex gap-4 pt-4">
+                    <button onclick="closeAllModals()"
+                        class="flex-1 py-4 bg-slate-100 text-slate-500 font-bold rounded-2xl hover:bg-slate-200 transition-all">Cancel</button>
+                    <button onclick="closeAllModals()"
+                        class="flex-[2] py-4 bg-blue-600 text-white font-black rounded-2xl shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all uppercase text-xs tracking-widest">Confirm
+                        Booking</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- APPOINTMENT DETAILS MODAL (image_d6d903.png) -->
+        <div id="appointmentDetailsModal"
+            class="relative bg-white border border-slate-100 rounded-[40px] shadow-2xl w-full max-w-lg hidden flex-col overflow-hidden animate-in">
+            <!-- Modal Header -->
+            <div class="p-6 pb-4 border-b border-slate-50 flex justify-between items-center bg-[#f0f7ff]">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-sm">
+                        <i class="ph-fill ph-info text-2xl"></i>
+                    </div>
+                    <div class="bg-blue-600 px-4 py-1.5 rounded shadow-sm">
+                        <h3 class="text-base font-black text-white tracking-widest uppercase">Appointment Details</h3>
+                    </div>
+                </div>
+                <button onclick="closeAllModals()"
+                    class="bg-blue-600 w-10 h-10 flex items-center justify-center rounded-xl text-white shadow-sm hover:bg-blue-700 transition-colors">
+                    <i class="ph ph-x text-xl font-bold"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content (Grid) -->
+            <div class="p-10 grid grid-cols-2 gap-4 bg-white">
+                <div class="p-5 border border-slate-100 rounded-[24px] bg-white shadow-sm">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">PATIENT</p>
+                    <p class="text-xl font-extrabold text-[#0a192f]">Karan Nair</p>
+                </div>
+                <div class="p-5 border border-slate-100 rounded-[24px] bg-white shadow-sm">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">PATIENT ID</p>
+                    <p class="text-xl font-extrabold text-[#0a192f]">REG-157</p>
+                </div>
+                <div class="p-5 border border-slate-100 rounded-[24px] bg-white shadow-sm">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">THERAPIST</p>
+                    <p class="text-xl font-extrabold text-[#0a192f]">Anchalsingh</p>
+                </div>
+                <div class="p-5 border border-slate-100 rounded-[24px] bg-white shadow-sm">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">DATE</p>
+                    <p class="text-xl font-extrabold text-[#0a192f]">Mar 23, 2026</p>
+                </div>
+                <div class="p-5 border border-slate-100 rounded-[24px] bg-white shadow-sm">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">TIME</p>
+                    <p class="text-xl font-extrabold text-[#0a192f]">11:55</p>
+                </div>
+                <div class="p-5 border border-slate-100 rounded-[24px] bg-white shadow-sm">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">STATUS</p>
+                    <span
+                        class="inline-block px-5 py-1.5 bg-[#475569] text-white text-[11px] font-black rounded-full mt-2 uppercase tracking-widest">Scheduled</span>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-10 pt-0 flex gap-4">
+                <button onclick="toggleModal('notesModal')"
+                    class="flex-[2] py-5 bg-[#00c06a] hover:bg-[#00a85d] text-white font-black rounded-2xl transition-all shadow-xl shadow-green-100 flex items-center justify-center gap-2 uppercase text-xs tracking-widest">
+                    Open Counselling notes
+                </button>
+                <button onclick="closeAllModals()"
+                    class="flex-1 py-5 bg-white text-slate-500 font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all flex items-center justify-center gap-2 uppercase text-xs tracking-widest">
+                    <i class="ph ph-x"></i> Close
+                </button>
+            </div>
+        </div>
+
+        <!-- COUNSELLING NOTES MODAL (image_d659d9.png / image_d66804.png) -->
+        <div id="notesModal"
+            class="relative bg-[#f1f5f9] border border-white rounded-[32px] shadow-2xl w-full max-w-2xl hidden flex-col overflow-hidden animate-in">
+            <div class="p-10 pb-4 flex justify-between items-start">
+                <div>
+                    <h3 class="text-3xl font-black text-[#1e293b] tracking-tight">Counselling notes</h3>
+                    <p class="text-slate-500 font-bold text-base mt-1">Karan Nair</p>
+                </div>
+                <button onclick="closeAllModals()"
+                    class="p-1 hover:bg-slate-200 rounded transition-colors text-slate-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="p-10 pt-2 space-y-6 overflow-y-auto max-h-[70vh]">
+                <!-- Registration Summary -->
+                <div class="bg-white border border-slate-200 rounded-[28px] p-8 shadow-sm">
+                    <div class="mb-6">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">REGISTRATION</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-6 text-[15px]">
+                        <div class="flex gap-2"><span class="text-slate-500 font-medium">Category:</span><span
+                                class="text-slate-800 font-bold">athlete</span></div>
+                        <div class="flex gap-2"><span class="text-slate-500 font-medium">Sport:</span><span
+                                class="text-slate-800 font-bold">Swimming</span></div>
+                        <div class="flex gap-2"><span class="text-slate-500 font-medium">Visit purpose:</span><span
+                                class="text-slate-800 font-bold">Strength and Conditioning</span></div>
+                        <div class="flex gap-2"><span class="text-slate-500 font-medium">Referred to:</span><span
+                                class="text-cyan-500 font-black">Strength and Conditioning</span></div>
+                    </div>
+                </div>
+
+                <!-- Specialist Note -->
+                <div class="bg-white border border-slate-200 rounded-[28px] p-8 shadow-sm space-y-5">
+                    <div class="flex justify-between items-center text-sm font-bold text-slate-400">
+                        <span>23 Mar 2026</span>
+                        <span>Anchalsingh</span>
+                    </div>
+
+                    <div class="space-y-1">
+                        <p class="text-cyan-400 font-black text-base">Referred to: Strength and Conditioning</p>
+                        <p class="text-slate-700 text-[15px] font-medium leading-relaxed">Aiming for Asian Games - 2026
+                        </p>
+                    </div>
+
+                    <div class="package-box">
+                        <p class="text-[10px] font-black text-[#8a7a6e] uppercase tracking-[0.2em] mb-1">RECOMMENDED
+                            PACKAGE</p>
+                        <p class="text-white text-2xl font-black tracking-tight">SNC 3Month</p>
+                    </div>
+
+                    <div class="space-y-4 pt-2 text-[15px]">
+                        <div class="flex gap-3"><span class="text-slate-400 font-medium">Occupation:</span><span
+                                class="text-slate-700 font-bold">Professional Athlete</span></div>
+                        <div class="flex gap-3"><span class="text-slate-400 font-medium">Target department:</span><span
+                                class="text-slate-700 font-bold uppercase">snc</span></div>
+                        <div class="flex gap-3"><span class="text-slate-400 font-medium">S&C category:</span><span
+                                class="text-slate-700 font-bold">Performance Assessment</span></div>
+                        <div class="flex gap-3"><span class="text-slate-400 font-medium">S&C goals:</span><span
+                                class="text-slate-700 font-bold">Test and decide</span></div>
+                        <div class="flex gap-3"><span class="text-slate-400 font-medium">Referred to
+                                department:</span><span class="text-slate-700 font-bold text-cyan-600">Strength and
+                                Conditioning</span></div>
+                        <div class="flex gap-3 items-start"><span class="text-slate-400 font-medium shrink-0">Counsellor
+                                remarks:</span><span class="text-slate-700 font-bold leading-snug">Aiming for Asian
+                                Games - 2026</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-10 pt-4 pb-10 flex justify-start">
+                <button onclick="closeAllModals()"
+                    class="px-8 py-3.5 bg-white text-slate-500 font-black rounded-2xl border-2 border-slate-100 hover:bg-slate-50 transition shadow-sm uppercase text-xs tracking-widest">Close</button>
             </div>
         </div>
     </div>
 
     <script>
-        const sidebar = document.getElementById('sidebar');
-        const backdrop = document.getElementById('sidebar-backdrop');
-        const toggleBtn = document.getElementById('toggle-sidebar');
-        const closeBtn = document.getElementById('close-sidebar');
-
-        function toggleSidebar() {
-            const isOpen = !sidebar.classList.contains('-translate-x-full');
-            if (isOpen) {
-                sidebar.classList.add('-translate-x-full');
-                backdrop.classList.add('hidden');
-                backdrop.classList.remove('opacity-100');
-            } else {
-                sidebar.classList.remove('-translate-x-full');
-                backdrop.classList.remove('hidden');
-                setTimeout(() => backdrop.classList.add('opacity-100'), 10);
-            }
-        }
-
-        toggleBtn.addEventListener('click', toggleSidebar);
-        closeBtn.addEventListener('click', toggleSidebar);
-        backdrop.addEventListener('click', toggleSidebar);
-
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 1024) {
-                sidebar.classList.remove('-translate-x-full');
-                backdrop.classList.add('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-            }
-        });
-
-        function toggleModal(id) {
-            document.getElementById('modal-container').classList.remove('hidden');
-            document.getElementById('modal-container').classList.add('flex');
-            document.getElementById(id).classList.remove('hidden');
-            document.getElementById(id).classList.add('flex');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeAllModals() {
-            document.getElementById('modal-container').classList.add('hidden');
-            document.getElementById('modal-container').classList.remove('flex');
-            document.getElementById('bookingModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
+        let calendar;
 
         document.addEventListener('DOMContentLoaded', function () {
             const calendarEl = document.getElementById('calendar');
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek',
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
                 headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
                 slotMinTime: '09:00:00',
                 slotMaxTime: '21:00:00',
-                height: 'auto',
                 allDaySlot: false,
-                slotDuration: '00:30:00',
+                slotDuration: '00:10:00',
+                slotLabelInterval: '01:00',
                 nowIndicator: true,
                 events: [
-                    { title: 'Karan Nair', start: '2026-03-23T11:55:00', end: '2026-03-23T12:25:00', backgroundColor: '#2563eb' },
-                    { title: 'Amit Sharma', start: '2026-03-24T14:20:00', end: '2026-03-24T14:50:00', backgroundColor: '#059669' }
-                ]
+                    { title: 'Karan Nair - Physio', start: '2026-03-23T11:55:00', end: '2026-03-23T12:25:00', className: 'type-physio' },
+                    { title: 'Amit Sharma - S&C', start: '2026-03-24T14:20:00', end: '2026-03-24T14:50:00', className: 'type-snc' },
+                    { title: 'Sarah - S&C', start: '2026-03-24T10:00:00', end: '2026-03-24T11:00:00', className: 'type-snc' },
+                    { title: 'Priya Verma - Counselling', start: '2026-03-25T10:00:00', end: '2026-03-25T10:30:00', className: 'type-counselling' }
+                ],
+                eventClick: function (info) {
+                    toggleModal('appointmentDetailsModal');
+                }
             });
             calendar.render();
-            
-            window.addEventListener('resize', () => {
-                calendar.changeView(window.innerWidth < 768 ? 'timeGridDay' : 'timeGridWeek');
+
+            document.getElementById('viewWeek').addEventListener('click', () => {
+                calendar.changeView('timeGridWeek');
+                updateToggle(document.getElementById('viewWeek'));
+            });
+            document.getElementById('viewDay').addEventListener('click', () => {
+                calendar.changeView('timeGridDay');
+                updateToggle(document.getElementById('viewDay'));
             });
         });
+
+        function updateToggle(btn) {
+            document.querySelectorAll('#viewWeek, #viewDay').forEach(b => {
+                b.classList.remove('bg-blue-50', 'text-blue-600');
+                b.classList.add('text-slate-500');
+            });
+            btn.classList.add('bg-blue-50', 'text-blue-600');
+            btn.classList.remove('text-slate-500');
+        }
+
+        function toggleModal(id) {
+            const container = document.getElementById('modal-container');
+            const target = document.getElementById(id);
+            closeAllModals();
+            container.classList.remove('hidden');
+            container.classList.add('flex');
+            target.classList.remove('hidden');
+            target.classList.add('flex');
+        }
+
+        function closeAllModals() {
+            const container = document.getElementById('modal-container');
+            container.classList.add('hidden');
+            container.classList.remove('flex');
+            ['bookingModal', 'appointmentDetailsModal', 'notesModal'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+                document.getElementById(id).classList.remove('flex');
+            });
+        }
     </script>
 </body>
 

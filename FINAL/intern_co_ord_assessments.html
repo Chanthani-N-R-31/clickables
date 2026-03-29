@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Coordinator Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        .tab-active {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            color: #d97706;
+            /* amber-600 */
+            border-bottom-color: transparent;
+            position: relative;
+            top: 1px;
+        }
+
+        .tab-inactive {
+            color: #64748b;
+            /* slate-500 */
+            border: 1px solid transparent;
+        }
+
+        .tab-inactive:hover {
+            color: #1e293b;
+            /* slate-800 */
+            background-color: #f8fafc;
+            /* slate-50 */
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.625rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            outline: none;
+            transition: all 0.2s;
+            background-color: #fff;
+        }
+
+        .input-field:focus {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+
+        .label-text {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 0.4rem;
+        }
+
+        .sub-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="bg-[#f0f4f8] text-[#0a192f] antialiased flex h-screen overflow-hidden relative">
+
+    <!-- Sidebar -->
+    <aside class="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 z-20">
+        <div class="p-8 border-b border-slate-50">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-[#005af5] text-3xl">⚡</span>
+                <div class="font-black text-xl tracking-tighter text-[#1e293b] leading-tight uppercase">Sports Science<br>Engineer</div>
+            </div>
+            <p class="text-[0.65rem] text-slate-400 uppercase font-black tracking-widest">
+                Logged in as: <span class="text-amber-500 font-bold">Coordinator</span>
+            </p>
+        </div>
+        <nav class="flex-1 px-4 space-y-1">
+            <div class="my-4 border-t border-slate-100"></div>
+            <a href="intern_co-or_mentor_managemrnt.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">📋</span> All Interns
+            </a>
+            <a href="intern_co_ord_batch_link.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">🔗</span> Batch Link
+            </a>
+            <a href="intern_co_ord_assessments.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 shadow-sm rounded-xl transition-colors">
+                <span class="mr-3">📝</span> Assessments
+            </a>
+            <a href="intern_co_ord_feedback.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">💬</span> Feedback
+            </a>
+            <a href="intern_co_ord_manage_holidays.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">📅</span> Manage Holidays
+            </a>
+            <a href="intern_co_ord_college.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">🏫</span> College
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        <!-- Header -->
+        <header
+            class="bg-white z-10 relative p-4 flex justify-between items-center border-b border-slate-200 shadow-sm px-8">
+            <div class="flex items-center gap-3">
+                <button id="mobile-menu-btn" class="md:hidden p-2 text-slate-500 hover:text-blue-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <span class="text-blue-500 text-2xl">⚡</span>
+                <h1 id="page-title" class="font-black text-slate-800 tracking-tighter text-sm uppercase">Internship Coordinator</h1>
+            </div>
+        </header>
+
+        <!-- Floating Navigation Buttons -->
+    <div class="fixed bottom-6 right-6 flex items-center gap-3 z-[60]">
+        <a href="INTERN-CO-ORDINATOR.drawio.html"
+            class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-full shadow-lg hover:bg-slate-50 transition-all hover:scale-110 active:scale-95">
+            <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </a>
+        <a href="IT.drawio (1).html"
+            class="w-12 h-12 flex items-center justify-center bg-[#005af5] rounded-full shadow-lg hover:bg-blue-600 transition-all hover:scale-110 active:scale-95 text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+        </a>
+    </div>
+
+    <!-- Main Navigation Tabs -->
+        <div class="px-6 pt-6 flex gap-2 border-b border-slate-200 bg-white overflow-x-auto no-scrollbar">
+            <button onclick="switchTab('assessments')" id="tab-assessments"
+                class="px-5 py-3 rounded-t-xl font-semibold text-sm transition tab-active">Assessments</button>
+        </div>
+
+        <div class="flex-1 overflow-auto p-6 space-y-6">
+
+
+            <!-- VIEW: Assessments -->
+            <div id="view-assessments" class="hidden space-y-6 max-w-6xl mx-auto">
+                <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-6">
+                    <h2 class="text-xl font-bold text-slate-800">Assessment Manager</h2>
+                    <p class="text-slate-500 text-sm mt-1 mb-6 leading-relaxed">
+                        Choose a track, then edit group headings and rating criterion labels. Specialists rate each item
+                        from 1–5.
+                    </p>
+
+                    <div class="flex gap-2 mb-6 flex-wrap">
+                        <button onclick="switchAssTab('pre')" id="ass-tab-pre"
+                            class="px-4 py-2 bg-white border rounded-xl text-sm font-bold border-slate-200 text-slate-600">Pre-Evaluation</button>
+                        <button onclick="switchAssTab('final')" id="ass-tab-final"
+                            class="px-4 py-2 bg-white border rounded-xl text-sm font-medium text-slate-600 border-slate-200 hover:bg-slate-50">Final
+                            Assessment</button>
+                        <button onclick="switchAssTab('weekly')" id="ass-tab-weekly"
+                            class="px-4 py-2 bg-white border rounded-xl text-sm font-bold border-amber-500 ring-2 ring-amber-500/10 text-amber-700">Weekly
+                            Assessments</button>
+                    </div>
+
+                    <!-- Pre-Evaluation -->
+                    <section id="ass-view-pre" class="hidden space-y-6">
+                        <div id="pre-mcq-container" class="space-y-4"></div>
+                        <div class="pt-6 border-t border-slate-100 space-y-4">
+                            <h3 class="text-sm font-bold text-slate-700">Subjective prompts (Q21 & Q22)</h3>
+                            <div class="grid gap-4">
+                                <div><label class="label-text">Q21 Prompt</label><textarea id="pre_subj_21" rows="2" class="input-field">What are your current strengths in physiotherapy assessment and rehab?</textarea></div>
+                                <div><label class="label-text">Q22 Prompt</label><textarea id="pre_subj_22" rows="2" class="input-field">What do you think you can improve on?</textarea></div>
+                            </div>
+                        </div>
+                        <button onclick="saveAssessment('Pre-Evaluation')" class="mt-4 px-6 py-3 bg-amber-500 text-white font-bold rounded-xl text-sm shadow-md">Save Pre-Evaluation</button>
+                    </section>
+
+                    <!-- Final Assessment -->
+                    <section id="ass-view-final" class="hidden space-y-6">
+                        <div id="final-mcq-container" class="space-y-4"></div>
+                        <div class="flex gap-4 pt-4 border-t border-slate-100">
+                            <button onclick="addMCQ('final')" class="px-4 py-2 bg-slate-100 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-200 transition-colors">+ Add Question</button>
+                            <button onclick="saveAssessment('Final Assessment')" class="px-6 py-3 bg-amber-500 text-white font-bold rounded-xl text-sm shadow-md transition-all hover:bg-amber-600">Save Final Assessment</button>
+                        </div>
+                    </section>
+
+                    <section id="ass-view-weekly" class="space-y-6">
+                        <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2" id="weekly-track-tabs"></div>
+                        <div id="weekly-rubric-editor" class="space-y-8">
+                            <div id="weekly-rubric-header"></div>
+                            <div id="weekly-rubric-groups" class="space-y-8"></div>
+                            <div id="weekly-rubric-footer" class="pt-4"></div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+
+            <!-- Other placeholders -->
+        </div>
+    </main>
+
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50"></div>
+
+    <script>
+        let currentTrack = 'weekly_1';
+        let assessmentData = {
+            pre: [
+                { section: "Anatomy", question: "Which of the following is part of the Rotator Cuff muscle group?", A: "Teres Major", B: "Supraspinatus", C: "Deltoid", D: "Trapezius", answer: "B", marks: 1 },
+                { section: "Physiology", question: "What is the primary energy system used during a 100m sprint?", A: "Aerobic System", B: "Glycolytic System", C: "ATP-CP System", D: "Oxidative Phosphorylation", answer: "C", marks: 1 },
+                { section: "Rehabilitation", question: "In the RICE protocol for acute injuries, what does 'E' stand for?", A: "Exercise", B: "Extension", C: "Elevation", D: "Evaluation", answer: "C", marks: 1 },
+                { section: "Biomechanics", question: "A bicep curl occurs primarily in which plane of movement?", A: "Frontal", B: "Sagittal", C: "Transverse", D: "Oblique", answer: "B", marks: 1 },
+                { section: "Clinical", question: "Which tool is standard for measuring joint Range of Motion (ROM)?", A: "Sphygmomanometer", B: "Goniometer", C: "Dynamometer", D: "Plumb Line", answer: "B", marks: 1 },
+                { section: "Anatomy", question: "Which ligament is most commonly injured in a lateral ankle sprain?", A: "Deltoid Ligament", B: "Anterior Talofibular Ligament (ATFL)", C: "Posterior Cruciate Ligament", D: "Long Plantar Ligament", answer: "B", marks: 1 },
+                { section: "Training", question: "What is the definition of Muscular Hypertrophy?", A: "Increase in muscle fiber length", B: "Increase in muscle cell size", C: "Decrease in body fat percentage", D: "Improvement in nerve conduction", answer: "B", marks: 1 },
+                { section: "Anatomy", question: "Which bone is commonly referred to as the 'Kneecap'?", A: "Tibia", B: "Femur", C: "Patella", D: "Fibula", answer: "C", marks: 1 },
+                { section: "Physiology", question: "What is considered a normal resting heart rate range for an adult?", A: "40-50 bpm", B: "60-100 bpm", C: "110-130 bpm", D: "140-160 bpm", answer: "B", marks: 1 },
+                { section: "Biomechanics", question: "What type of muscle contraction occurs when the muscle lengthens under tension?", A: "Isometric", B: "Concentric", C: "Eccentric", D: "Isokinetic", answer: "C", marks: 1 },
+                { section: "Sports Science", question: "VO2 Max is a measure of which of the following?", A: "Maximum lung capacity", B: "Maximal aerobic capacity", C: "Blood pressure peak", D: "Muscle explosive power", answer: "B", marks: 1 },
+                { section: "Anatomy", question: "The Anterior Cruciate Ligament (ACL) primarily prevents which tibial movement?", A: "Posterior translation", B: "Anterior translation", C: "Lateral rotation", D: "Medial gliding", answer: "B", marks: 1 },
+                { section: "Nutrition", question: "Which of the following is classified as a macronutrient?", A: "Vitamin C", B: "Protein", C: "Zinc", D: "Iron", answer: "B", marks: 1 },
+                { section: "Training", question: "A 'Synergist' muscle is one that:", A: "Opposes the prime mover", B: "Assists the prime mover", C: "Acts as the primary force generator", D: "Stabilizes the origin only", answer: "B", marks: 1 },
+                { section: "Clinical", question: "In terms of anatomical direction, 'Proximal' means:", A: "Further from the midline", B: "Closer to the point of attachment", C: "Towards the feet", D: "Towards the back", answer: "B", marks: 1 },
+                { section: "Physiology", question: "Which of these is the primary hip flexor muscle?", A: "Gluteus Maximus", B: "Iliopsoas", C: "Biceps Femoris", D: "Gastrocnemius", answer: "B", marks: 1 },
+                { section: "Rehabilitation", question: "Phase 1 of post-surgical rehab typically focuses on:", A: "Return to sport", B: "Maximum strength", C: "Edema and pain control", D: "Plyometric training", answer: "C", marks: 1 },
+                { section: "Physics", question: "What is the SI unit of Power in exercise science?", A: "Joule", B: "Newton", C: "Watt", D: "Kilogram", answer: "C", marks: 1 },
+                { section: "Anatomy", question: "How many vertebrae are in the Lumbar spine?", A: "7", B: "12", C: "5", D: "4", answer: "C", marks: 1 },
+                { section: "Clinical", question: "What does the 'Lachman Test' assess?", A: "Meniscal tear", B: "ACL integrity", C: "Ankle stability", D: "Rotator cuff strength", answer: "B", marks: 1 }
+            ],
+            final: [
+                { section: "Advanced Rehab", question: "Which mechanism is most common for a non-contact ACL injury?", A: "Direct blow to the lateral knee", B: "Sudden deceleration with a pivot maneuver", C: "Landing with a neutral hip position", D: "Hyperextension with foot off the ground", answer: "B", marks: 2 },
+                { section: "Exercise Physiology", question: "The 'Cross-Education' effect refers to:", A: "Learning multiple sports at once", B: "Strength gains in an untrained limb following unilateral training", C: "Combining cardio and weights in one session", D: "Mental rehearsal improving physical skill", answer: "B", marks: 2 },
+                { section: "Pathology", question: "What is a hallmark sign of 'Overtraining Syndrome'?", A: "Improved sleep quality", B: "Decrease in resting heart rate", C: "Persistent performance decline despite rest", D: "Increased appetite", answer: "C", marks: 2 },
+                { section: "Manual Therapy", question: "A 'Hold-Relax' PNF stretch utilizes which neurological principle?", A: "Reciprocal Inhibition", B: "Autogenic Inhibition", C: "Stretch Reflex", D: "Myotatic Reflex", answer: "B", marks: 2 },
+                { section: "Biomechanics", question: "A Closed Kinetic Chain (CKC) exercise is characterized by:", A: "The distal segment being free to move", B: "The distal segment being fixed to a stable surface", C: "Isolation of a single joint only", D: "Minimal weight bearing", answer: "B", marks: 2 }
+            ],
+            weekly: {
+                weekly_1: {
+                    title: "Sports Science",
+                    groups: [
+                        {
+                            title: "Core Professional Skills (Rate 1-5)", items: [
+                                { field: "professionalism", label: "Professionalism (punctuality, attire, communication)" },
+                                { field: "communication_athletes_staff", label: "Communication with athletes and staff" },
+                                { field: "proactiveness_learning", label: "Proactiveness in learning" },
+                                { field: "responsibility_tasks", label: "Responsibility in assigned tasks" },
+                                { field: "accountability_data", label: "Accountability for data and reporting" }
+                            ]
+                        },
+                        {
+                            title: "Sports Science Competencies (Rate 1-5)", items: [
+                                { field: "understanding_testing_protocols", label: "Understanding of testing protocols" },
+                                { field: "accuracy_data_collection", label: "Accuracy during data collection" },
+                                { field: "familiarity_equipment", label: "Familiarity with sports science equipment" },
+                                { field: "attention_measurement_detail", label: "Attention to measurement detail" },
+                                { field: "ability_assist_testing", label: "Ability to assist in testing sessions" },
+                                { field: "interpretation_collected_data", label: "Basic interpretation of collected data" }
+                            ]
+                        },
+                        {
+                            title: "Work Approach (Rate 1-5)", items: [
+                                { field: "analytical_thinking", label: "Analytical thinking" },
+                                { field: "follow_scientific_procedures", label: "Ability to follow scientific procedures" },
+                                { field: "curiosity_performance_metrics", label: "Curiosity to understand performance metrics" },
+                                { field: "responsiveness_mentor_feedback", label: "Responsiveness to mentor feedback" }
+                            ]
+                        }
+                    ]
+                },
+                weekly_2: {
+                    title: "Sports Physiotherapy",
+                    groups: [
+                        {
+                            title: "Core Professional Skills (Rate 1-5)", items: [
+                                { field: "professionalism", label: "Professionalism" },
+                                { field: "rapport_athletes", label: "Rapport with athletes" },
+                                { field: "proactiveness_learning", label: "Proactiveness in learning" },
+                                { field: "responsibility_sessions", label: "Responsibility during sessions" },
+                                { field: "accountability_tasks", label: "Accountability for assigned tasks" }
+                            ]
+                        },
+                        {
+                            title: "Sports Physio Competencies (Rate 1-5)", items: [
+                                { field: "understanding_injury_management", label: "Understanding of sports injury management" },
+                                { field: "assist_rehab_sessions", label: "Ability to assist in rehabilitation sessions" },
+                                { field: "exercise_instruction_rehab", label: "Exercise instruction for rehab programs" },
+                                { field: "observation_movement_biomechanics", label: "Observation of movement and biomechanics" },
+                                { field: "safety_awareness_rehab", label: "Safety awareness during rehab exercises" },
+                                { field: "readiness_onfield_gym", label: "Readiness during on-field / gym sessions" }
+                            ]
+                        },
+                        {
+                            title: "Engagement & Learning (Rate 1-5)", items: [
+                                { field: "initiative_injury_discussions", label: "Initiative during injury management discussions" },
+                                { field: "communication_athletes", label: "Communication with athletes" },
+                                { field: "follow_rehab_protocols", label: "Ability to follow rehab protocols" },
+                                { field: "application_mentor_feedback", label: "Application of mentor feedback" }
+                            ]
+                        }
+                    ]
+                },
+                weekly_3: {
+                    title: "Clinical Physiotherapy",
+                    groups: [
+                        {
+                            title: "Core Professional Skills (Rate 1-5)", items: [
+                                { field: "professionalism_clinic_etiquette", label: "Professionalism and clinic etiquette" },
+                                { field: "rapport_patients", label: "Rapport with patients" },
+                                { field: "proactiveness_learning", label: "Proactiveness in learning" },
+                                { field: "responsibility_patient_handling", label: "Responsibility in patient handling" },
+                                { field: "accountability_assigned_work", label: "Accountability for assigned work" }
+                            ]
+                        },
+                        {
+                            title: "Clinical Competencies (Rate 1-5)", items: [
+                                { field: "observation_skills_patient_assessment", label: "Observation skills during patient assessment" },
+                                { field: "understanding_basic_clinical_conditions", label: "Understanding of basic clinical conditions" },
+                                { field: "assistance_treatment_procedures", label: "Assistance during treatment procedures" },
+                                { field: "ability_explain_exercises_patients", label: "Ability to explain exercises to patients" },
+                                { field: "hygiene_patient_safety_awareness", label: "Hygiene and patient safety awareness" },
+                                { field: "documentation_case_note_understanding", label: "Documentation and case note understanding" }
+                            ]
+                        },
+                        {
+                            title: "Learning Behaviour (Rate 1-5)", items: [
+                                { field: "curiosity_questioning_cases", label: "Curiosity and questioning during cases" },
+                                { field: "connect_theory_practice", label: "Ability to connect theory with practice" },
+                                { field: "attention_patient_comfort", label: "Attention to patient comfort" },
+                                { field: "responsiveness_mentor_feedback", label: "Responsiveness to mentor feedback" }
+                            ]
+                        }
+                    ]
+                },
+                weekly_4: {
+                    title: "Strength & Conditioning",
+                    groups: [
+                        {
+                            title: "Core Professional Skills (Rate 1-5)", items: [
+                                { field: "professionalism_punctuality_attire", label: "Professionalism (punctuality, attire, communication)" },
+                                { field: "rapport_athletes_clients", label: "Rapport with athletes/clients" },
+                                { field: "proactiveness_learning", label: "Proactiveness in learning" },
+                                { field: "responsibility_reliability", label: "Responsibility & reliability" },
+                                { field: "accountability_assigned_tasks", label: "Accountability for assigned tasks" }
+                            ]
+                        },
+                        {
+                            title: "SnC Technical Competencies (Rate 1-5)", items: [
+                                { field: "understanding_exercise_techniques", label: "Understanding of exercise techniques" },
+                                { field: "ability_demonstrate_exercises", label: "Ability to demonstrate exercises correctly" },
+                                { field: "coaching_cues_communication_training", label: "Coaching cues and communication during training" },
+                                { field: "awareness_safety_training_sessions", label: "Awareness of safety during training sessions" },
+                                { field: "ability_assist_session_setup", label: "Ability to assist in session setup" },
+                                { field: "understanding_basic_program_structure", label: "Understanding of basic program structure" }
+                            ]
+                        },
+                        {
+                            title: "Engagement & Work Ethic (Rate 1-5)", items: [
+                                { field: "initiative_ask_questions", label: "Initiative to ask questions" },
+                                { field: "attention_detail_sessions", label: "Attention to detail during sessions" },
+                                { field: "willingness_help_team_members", label: "Willingness to help team members" },
+                                { field: "ability_receive_apply_feedback", label: "Ability to receive and apply feedback" }
+                            ]
+                        }
+                    ]
+                }
+            }
+        };
+
+        function switchTab(view) {
+            const tabs = ['assessments'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const section = document.getElementById(`view-${t}`);
+                if (btn) btn.className = "px-5 py-3 rounded-t-xl font-semibold text-sm transition " + (t === view ? "tab-active" : "tab-inactive");
+                if (section) section.classList.toggle('hidden', t !== view);
+            });
+            if (view === 'assessments') switchAssTab('weekly');
+        }
+
+        function switchAssTab(sub) {
+            ['pre', 'final', 'weekly'].forEach(s => {
+                document.getElementById(`ass-tab-${s}`).className = "px-4 py-2 rounded-xl text-sm transition-all " + (s === sub ? "bg-white border font-bold border-amber-500 ring-2 ring-amber-500/10 text-amber-700" : "bg-white border font-medium text-slate-600 border-slate-200 hover:bg-slate-50");
+                document.getElementById(`ass-view-${s}`).classList.toggle('hidden', s !== sub);
+            });
+            if (sub === 'weekly') renderWeeklyTrackTabs();
+            if (sub === 'pre' || sub === 'final') renderMCQ(sub);
+        }
+
+        function renderMCQ(type) {
+            const container = document.getElementById(`${type}-mcq-container`);
+            container.innerHTML = assessmentData[type].map((q, idx) => `
+                <div class="p-5 border border-slate-200 rounded-2xl bg-white shadow-sm space-y-4 group relative">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Question ${idx + 1}</span>
+                        ${type === 'final' ? `<button onclick="removeMCQ(${idx})" class="text-red-400 hover:text-red-600 text-xs font-bold">Remove</button>` : ''}
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="md:col-span-1">
+                            <label class="label-text text-[10px]">Section</label>
+                            <input type="text" value="${q.section}" class="input-field py-1.5 text-xs">
+                        </div>
+                        <div class="md:col-span-3">
+                            <label class="label-text text-[10px]">Question Text</label>
+                            <input type="text" value="${q.question}" class="input-field py-1.5 text-xs">
+                        </div>
+                        <div><label class="label-text text-[10px]">Option A</label><input type="text" value="${q.A}" class="input-field py-1.5 text-xs"></div>
+                        <div><label class="label-text text-[10px]">Option B</label><input type="text" value="${q.B}" class="input-field py-1.5 text-xs"></div>
+                        <div><label class="label-text text-[10px]">Option C</label><input type="text" value="${q.C}" class="input-field py-1.5 text-xs"></div>
+                        <div><label class="label-text text-[10px]">Option D</label><input type="text" value="${q.D}" class="input-field py-1.5 text-xs"></div>
+                        <div class="md:col-span-2">
+                            <label class="label-text text-[10px]">Correct Answer</label>
+                            <select class="input-field py-1.5 text-xs">
+                                <option value="A" ${q.answer === 'A' ? 'selected' : ''}>Option A</option>
+                                <option value="B" ${q.answer === 'B' ? 'selected' : ''}>Option B</option>
+                                <option value="C" ${q.answer === 'C' ? 'selected' : ''}>Option C</option>
+                                <option value="D" ${q.answer === 'D' ? 'selected' : ''}>Option D</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="label-text text-[10px]">Marks</label>
+                            <input type="number" value="${q.marks}" class="input-field py-1.5 text-xs">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addMCQ(type) {
+            assessmentData[type].push({ section: "General", question: "", A: "", B: "", C: "", D: "", answer: "A", marks: 1 });
+            renderMCQ(type);
+        }
+
+        function removeMCQ(idx) {
+            assessmentData.final.splice(idx, 1);
+            renderMCQ('final');
+        }
+
+        function renderWeeklyTrackTabs() {
+            const container = document.getElementById('weekly-track-tabs');
+            container.innerHTML = Object.keys(assessmentData.weekly).map(key => `
+                <button onclick="setWeeklyTrack('${key}')" class="whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold border transition-all ${key === currentTrack ? 'bg-amber-50 border-amber-300 text-amber-700 ring-2 ring-amber-500/10' : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300'}">
+                    ${assessmentData.weekly[key].title}
+                </button>
+            `).join('');
+            renderWeeklyEditor();
+        }
+
+        function setWeeklyTrack(key) { currentTrack = key; renderWeeklyTrackTabs(); }
+
+        function renderWeeklyEditor() {
+            const header = document.getElementById('weekly-rubric-header');
+            const groups = document.getElementById('weekly-rubric-groups');
+            const footer = document.getElementById('weekly-rubric-footer');
+            const track = assessmentData.weekly[currentTrack];
+
+            header.innerHTML = `
+                <div class="space-y-1.5">
+                    <label class="text-[10px] uppercase text-slate-400 font-black tracking-wider">Display title (tab / heading)</label>
+                    <input type="text" value="${track.title}" class="input-field max-w-md">
+                </div>
+            `;
+
+            groups.innerHTML = track.groups.map(group => `
+                <div class="border border-slate-200 rounded-2xl p-6 bg-slate-50/30 space-y-6">
+                    <div>
+                        <label class="text-[10px] uppercase text-slate-400 font-black tracking-wider mb-2 block">Group title</label>
+                        <input type="text" value="${group.title}" class="input-field font-semibold text-slate-700">
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-[10px] uppercase text-slate-400 font-black tracking-wider">Rating criteria (1–5 scale on specialist form)</p>
+                        ${group.items.map(item => `
+                            <div class="flex items-center gap-6 p-6 bg-white rounded-xl border border-slate-200 shadow-sm transition-hover hover:border-slate-300">
+                                <div class="w-40 flex-shrink-0">
+                                    <span class="block text-[10px] uppercase text-slate-400 font-bold mb-1.5 tracking-tight">Field Key</span>
+                                    <div class="text-[13px] font-mono font-medium text-slate-500 bg-slate-50/50 px-2 py-1 rounded border border-slate-100 inline-block">${item.field}</div>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="block text-[10px] uppercase text-slate-400 font-bold mb-1.5 tracking-tight">Criterion label</span>
+                                    <input type="text" value="${item.label}" class="w-full px-4 py-2.5 text-sm font-semibold text-slate-700 border border-slate-200 rounded-lg focus:border-amber-400 focus:ring-4 focus:ring-amber-400/5 outline-none transition-all">
+                                </div>
+                                <div class="w-24 text-right flex flex-col justify-center">
+                                    <span class="text-[11px] text-slate-400 font-bold tracking-tight uppercase px-3 py-1 bg-slate-50 rounded-full border border-slate-100">Scale 1—5</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            footer.innerHTML = `
+                <button onclick="saveAssessment('${track.title}')" class="px-6 py-2.5 bg-[#005af5] text-white font-bold rounded-lg text-sm shadow-md hover:bg-blue-600 transition-all active:scale-95">
+                    Save ${track.title} rubric
+                </button>
+            `;
+        }
+
+        function showToast(msg, type) {
+            const t = document.createElement('div');
+            t.className = `mb-4 px-6 py-3 rounded-xl shadow-xl transition-all duration-300 text-white font-bold text-sm ${type === 'success' ? 'bg-emerald-500' : 'bg-blue-500'}`;
+            t.textContent = msg;
+            document.getElementById('toast-container').appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        function saveAssessment(label) { showToast(`${label} rubric saved successfully.`, "success"); }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            switchTab('assessments');
+        });
+    </script>
+</body>
+
+</html>

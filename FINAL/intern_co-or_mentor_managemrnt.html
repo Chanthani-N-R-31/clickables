@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CSS Platform">
+    <title>Internship Coordinator | CSS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        @supports (padding-top: env(safe-area-inset-top)) {
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+            }
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tab-active {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            color: #d97706;
+            /* amber-600 */
+            border-bottom-color: transparent;
+            position: relative;
+            top: 1px;
+        }
+
+        .tab-inactive {
+            color: #64748b;
+            /* slate-500 */
+            border: 1px solid transparent;
+        }
+
+        .tab-inactive:hover {
+            color: #1e293b;
+            /* slate-800 */
+            background-color: #f8fafc;
+            /* slate-50 */
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.625rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            outline: none;
+            transition: all 0.2s;
+            background-color: #fff;
+        }
+
+        .input-field:focus {
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
+        }
+
+        .label-text {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+
+        .sub-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="bg-[#f0f4f8] text-[#0a192f] antialiased flex h-screen overflow-hidden relative">
+
+    <!-- Sidebar -->
+    <aside class="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 z-20">
+        <div class="p-8 border-b border-slate-50">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="text-[#005af5] text-3xl">⚡</span>
+                <div class="font-black text-xl tracking-tighter text-[#1e293b] leading-tight uppercase">Sports Science<br>Engineer</div>
+            </div>
+            <p class="text-[0.65rem] text-slate-400 uppercase font-black tracking-widest">
+                Logged in as: <span class="text-amber-500 font-bold">Coordinator</span>
+            </p>
+        </div>
+        <nav class="flex-1 px-4 space-y-1">
+            <div class="my-4 border-t border-slate-100"></div>
+            <a href="intern_co-or_mentor_managemrnt.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-bold text-amber-700 bg-amber-50 border border-amber-200 shadow-sm rounded-xl transition-colors">
+                <span class="mr-3">📋</span> All Interns
+            </a>
+            <a href="intern_co_ord_batch_link.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">🔗</span> Batch Link
+            </a>
+            <a href="intern_co_ord_assessments.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">📝</span> Assessments
+            </a>
+            <a href="intern_co_ord_feedback.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">💬</span> Feedback
+            </a>
+            <a href="intern_co_ord_manage_holidays.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">📅</span> Manage Holidays
+            </a>
+            <a href="intern_co_ord_college.html"
+                class="w-full flex items-center px-4 py-3 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-xl transition-colors">
+                <span class="mr-3">🏫</span> College
+            </a>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+        <!-- Header -->
+        <header
+            class="bg-white z-10 relative p-4 flex justify-between items-center border-b border-slate-200 shadow-sm px-8">
+            <div class="flex items-center gap-3">
+                <button id="mobile-menu-btn" class="md:hidden p-2 text-slate-500 hover:text-blue-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <span class="text-blue-500 text-2xl">⚡</span>
+                <h1 class="font-black text-slate-800 tracking-tighter text-sm uppercase">Internship Coordinator</h1>
+            </div>
+        </header>
+
+        <!-- Floating Navigation Buttons -->
+    <div class="fixed bottom-6 right-6 flex items-center gap-3 z-[60]">
+        <a href="INTERN-CO-ORDINATOR.drawio.html"
+            class="w-12 h-12 flex items-center justify-center bg-white border border-slate-200 rounded-full shadow-lg hover:bg-slate-50 transition-all hover:scale-110 active:scale-95">
+            <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+        </a>
+        <a href="IT.drawio (1).html"
+            class="w-12 h-12 flex items-center justify-center bg-[#005af5] rounded-full shadow-lg hover:bg-blue-600 transition-all hover:scale-110 active:scale-95 text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+        </a>
+    </div>
+
+    <!-- Notification Toast -->
+        <div class="px-6 pt-6 flex gap-2 border-b border-slate-200 bg-white overflow-x-auto no-scrollbar">
+            <button onclick="switchTab('interns')" id="tab-interns"
+                class="px-5 py-3 rounded-t-xl font-semibold text-sm transition tab-active">All Interns</button>
+            <button onclick="switchTab('past')" id="tab-past"
+                class="px-5 py-3 rounded-t-xl font-semibold text-sm transition tab-inactive">Past Interns</button>
+            <button onclick="switchTab('mentor')" id="tab-mentor"
+                class="px-5 py-3 rounded-t-xl font-semibold text-sm transition tab-inactive">Mentor Management</button>
+            <button onclick="switchTab('certificate')" id="tab-certificate"
+                class="px-5 py-3 rounded-t-xl font-semibold text-sm transition tab-inactive">Certificate</button>
+        </div>
+
+        <div class="flex-1 overflow-auto p-6">
+
+            <!-- VIEW: All Interns -->
+            <div id="view-interns" class="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+                <div class="p-6 border-b border-slate-100 bg-[#f8fafc]">
+                    <h2 class="text-xl font-bold text-[#1e293b]">All Interns</h2>
+                    <p class="text-slate-500 text-sm mt-1 leading-relaxed max-w-5xl">
+                        Certificate can be issued after 24 working days from each intern's registration date (Sundays
+                        excluded). Coordinator-declared holidays count as working days toward the 24. Certificate is
+                        sent by email.
+                    </p>
+
+                    <div class="mt-6 space-y-4">
+                        <div>
+                            <label
+                                class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Monthly
+                                Cohort</label>
+                            <select id="internBatchSelect"
+                                class="bg-white border border-slate-300 text-slate-800 rounded-xl px-4 py-2 text-sm font-semibold min-w-[220px] shadow-sm outline-none focus:ring-2 focus:ring-amber-500/20">
+                                <option value="March 2026">March 2026</option>
+                                <option value="February 2026">February 2026</option>
+                            </select>
+                        </div>
+
+                        <div class="relative max-w-sm">
+                            <span class="absolute inset-y-0 left-3 flex items-center text-blue-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </span>
+                            <input type="text" oninput="filterInternsTable(this.value)"
+                                placeholder="Search by name, email, or phone..."
+                                class="w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500/20 shadow-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead
+                            class="bg-[#f8fafc] text-[#64748b] font-bold border-b border-slate-200 uppercase text-[11px] tracking-wider">
+                            <tr>
+                                <th class="p-4">Sl.no</th>
+                                <th class="p-4">Intern Name & Contact</th>
+                                <th class="p-4">Registration Date</th>
+                                <th class="p-4">Attendance (Days Present)</th>
+                                <th class="p-4">Assessment Result</th>
+                                <th class="p-4">Completed Weekly Assessments</th>
+                                <th class="p-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="interns-table-body" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: Past Interns -->
+            <div id="view-past" class="hidden bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+                <div class="p-6 border-b border-slate-100 bg-[#f8fafc]">
+                    <h2 class="text-xl font-bold text-[#1e293b]">Past Interns</h2>
+                    <p class="text-slate-500 text-sm mt-1">Interns whose internship certificates have already been
+                        issued.</p>
+
+                    <div class="mt-4 relative max-w-sm">
+                        <span class="absolute inset-y-0 left-3 flex items-center text-blue-500">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </span>
+                        <input type="text" oninput="filterPastTable(this.value)" placeholder="Search past interns..."
+                            class="w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-amber-500/20 shadow-sm">
+                    </div>
+                </div>
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead
+                            class="bg-[#f8fafc] text-[#64748b] font-bold border-b border-slate-200 uppercase text-[11px] tracking-wider">
+                            <tr>
+                                <th class="p-4">Sl.no</th>
+                                <th class="p-4">Intern Name & Contact</th>
+                                <th class="p-4">Batch</th>
+                                <th class="p-4">Certificate</th>
+                                <th class="p-4 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="past-table-body" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: Mentor Management -->
+            <div id="view-mentor" class="hidden bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
+                <div class="p-6 border-b border-slate-100 bg-[#f8fafc]">
+                    <h2 class="text-xl font-bold text-[#1e293b]">Mentor Management</h2>
+                    <p class="text-slate-500 text-sm mt-1">Assign a mentor (Specialist) for each 6-working-day block.
+                    </p>
+                </div>
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead
+                            class="bg-[#f8fafc] text-[#64748b] font-bold border-b border-slate-200 uppercase text-[11px] tracking-wider">
+                            <tr>
+                                <th class="p-4">Sl.no</th>
+                                <th class="p-4">Intern Name & Contact</th>
+                                <th class="p-4">Week 1 (Days 1-6)</th>
+                                <th class="p-4">Week 2 (Days 7-12)</th>
+                                <th class="p-4">Week 3 (13-18)</th>
+                                <th class="p-4">Week 4 (19-24)</th>
+                                <th class="p-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mentor-table-body" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: Certificate -->
+            <div id="view-certificate"
+                class="hidden max-w-4xl mx-auto bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden mb-12">
+                <div class="p-6 border-b border-slate-100 bg-[#f8fafc]">
+                    <h2 class="text-xl font-bold text-slate-800">Certificate</h2>
+                    <p class="text-slate-500 text-sm mt-1 leading-relaxed">
+                        Edit the general internship certificate defaults. Options listed below appear in the
+                        <strong>Internship program</strong> dropdown when editing or issuing a certificate.
+                    </p>
+                </div>
+
+                <div class="p-6 space-y-8">
+                    <div id="cert-message-box" class="hidden p-4 rounded-xl text-sm font-semibold"></div>
+
+                    <form onsubmit="saveCertSettings(event)" class="space-y-8">
+                        <!-- Dropdown Options Section -->
+                        <div>
+                            <label class="label-text">Internship program — dropdown options</label>
+                            <span class="sub-label">One option per line. The first line is the default option for new
+                                certificates.</span>
+                            <textarea id="cert_program_options" rows="4" class="input-field font-mono">Sports Physiotherapy
+Clinical Posting</textarea>
+                        </div>
+
+                        <!-- Default Names Section -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="label-text">Default coordinator name</label>
+                                <input type="text" id="default_coordinator" value="Gayatri" class="input-field">
+                            </div>
+                            <div>
+                                <label class="label-text">Default director name</label>
+                                <input type="text" id="default_director" value="Antony Chacko" class="input-field">
+                            </div>
+                        </div>
+
+                        <div class="pt-6 border-t border-slate-100">
+                            <h3 class="text-base font-bold text-slate-800 mb-2">Certificate text content</h3>
+                            <p class="text-xs text-slate-500 mb-6">These values are used in certificate preview and
+                                certificate email globally.</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Row 1 -->
+                                <div>
+                                    <label class="label-text">Institution title</label>
+                                    <input type="text" value="CENTRE FOR SPORTS SCIENCE" class="input-field">
+                                </div>
+                                <div>
+                                    <label class="label-text">Watermark text</label>
+                                    <input type="text" value="ILITMYSPORT" class="input-field">
+                                </div>
+
+                                <!-- Association (Full Width) -->
+                                <div class="md:col-span-2">
+                                    <label class="label-text">Association line</label>
+                                    <input type="text"
+                                        value="(In Association with Department of Youth Empowerment and Sports, Govt. of Karnataka)"
+                                        class="input-field">
+                                </div>
+
+                                <!-- Address (Full Width) -->
+                                <div class="md:col-span-2">
+                                    <label class="label-text">Address line</label>
+                                    <input type="text"
+                                        value="Gate no. 8 & 10, Sree Kanteerava Stadium, Bangalore, 560027."
+                                        class="input-field">
+                                </div>
+
+                                <!-- Row 3 -->
+                                <div>
+                                    <label class="label-text">Certificate title</label>
+                                    <input type="text" value="CERTIFICATE" class="input-field">
+                                </div>
+                                <div>
+                                    <label class="label-text">Certificate subtitle</label>
+                                    <input type="text" value="OF COMPLETION" class="input-field">
+                                </div>
+
+                                <!-- Row 4 -->
+                                <div>
+                                    <label class="label-text">Certify line</label>
+                                    <input type="text" value="This is to certify" class="input-field">
+                                </div>
+                                <div>
+                                    <label class="label-text">Completion line</label>
+                                    <input type="text" value="for the successful completion of the Internship Prog"
+                                        class="input-field">
+                                </div>
+
+                                <!-- Row 5 -->
+                                <div>
+                                    <label class="label-text">Held-from prefix</label>
+                                    <input type="text" value="held from" class="input-field">
+                                </div>
+                                <div>
+                                    <label class="label-text">Held-to connector</label>
+                                    <input type="text" value="to" class="input-field">
+                                </div>
+
+                                <!-- Row 6 -->
+                                <div>
+                                    <label class="label-text">Milestone heading</label>
+                                    <input type="text" value="Assessment Milestones" class="input-field">
+                                </div>
+                                <div>
+                                    <label class="label-text">Milestone status heading</label>
+                                    <input type="text" value="Status" class="input-field">
+                                </div>
+
+                                <!-- Row 7 -->
+                                <div>
+                                    <label class="label-text">Pre-evaluation label</label>
+                                    <input type="text" value="Pre - Evaluation" class="input-field">
+                                </div>
+                                <div>
+                                    <label class="label-text">Weekly-1 label</label>
+                                    <input type="text" value="Weekly Assessment - 1" class="input-field">
+                                </div>
+
+                                <!-- Row 8 -->
+                                <div>
+                                    <label class="label-text">Weekly-2 label</label>
+                                    <input type="text" value="Weekly Assessment - 2" class="input-field">
+                                </div>
+                                <div>
+                                    <label class="label-text">Weekly-3 label</label>
+                                    <input type="text" value="Weekly Assessment - 3" class="input-field">
+                                </div>
+
+                                <!-- Row 9 -->
+                                <div>
+                                    <label class="label-text">Weekly-4 label</label>
+                                    <input type="text" value="Weekly Assessment - 4" class="input-field">
+                                </div>
+                                <div>
+                                    <label class="label-text">Final milestone label</label>
+                                    <input type="text" value="Final Assessment" class="input-field">
+                                </div>
+
+                                <!-- Row 10 -->
+                                <div>
+                                    <label class="label-text">Coordinator designation</label>
+                                    <input type="text" value="Internship Coordinator" class="input-field">
+                                </div>
+                                <div>
+                                    <label class="label-text">Director designation</label>
+                                    <input type="text" value="Director" class="input-field">
+                                </div>
+
+                                <!-- Row 11 -->
+                                <div>
+                                    <label class="label-text">Seal text (use new line if needed)</label>
+                                    <textarea rows="2" class="input-field">OFFICIAL SEAL</textarea>
+                                </div>
+                                <div>
+                                    <label class="label-text">Issued-on prefix</label>
+                                    <input type="text" value="Issued on" class="input-field">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit"
+                                class="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-sm shadow-sm transition-all active:scale-95">
+                                Save certificate settings
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- UI Notification System -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50"></div>
+
+    <script>
+        // --- Specialists / Mentors ---
+        const specialists = [
+            { id: 101, display_name: "Dr. Sarah Johnson" },
+            { id: 102, display_name: "John Miller" },
+            { id: 103, display_name: "Dr. Mike Ross" },
+            { id: 104, display_name: "Emily White" }
+        ];
+
+        // --- Data Lists ---
+        let activeInterns = [
+            {
+                id: 1,
+                full_name: "Aditya Khulal",
+                email: "30khulaladitya@gmail.com",
+                phone: "8768924147",
+                reg_date: "Mar 2, 2026",
+                attendance: 1,
+                pre_eval: "17 / 20",
+                final_eval: "—",
+                weekly: ["W1"]
+            },
+            {
+                id: 2,
+                full_name: "Anupama B G",
+                email: "anupamabg24@gmail.com",
+                phone: "9620973744",
+                reg_date: "Mar 2, 2026",
+                attendance: 24, // Ready for issue!
+                pre_eval: "19 / 20",
+                final_eval: "18 / 20",
+                weekly: ["W1", "W2", "W3", "W4"]
+            },
+            {
+                id: 3,
+                full_name: "Alphy T Abraham",
+                email: "alphytabraham07@gmail.com",
+                phone: "8590493728",
+                reg_date: "Mar 2, 2026",
+                attendance: 12,
+                pre_eval: "20 / 20",
+                final_eval: "—",
+                weekly: ["W1", "W2"]
+            }
+        ];
+
+        let pastInterns = [
+            {
+                id: 50,
+                full_name: "Vikram Singh",
+                email: "vikram.s@example.com",
+                phone: "9988776655",
+                batch_code: "March 2026"
+            }
+        ];
+
+        let mentorAssignments = {
+            1: { w1: 101, w2: 102, w3: null, w4: null },
+            2: { w1: 103, w2: 104, w3: 101, w4: 102 },
+            3: { w1: null, w2: null, w3: null, w4: null }
+        };
+
+        // --- Core Functions ---
+
+        function switchTab(view) {
+            const tabs = ['interns', 'past', 'mentor', 'certificate'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                const section = document.getElementById(`view-${t}`);
+                if (t === view) {
+                    btn.className = "px-5 py-3 rounded-t-xl font-semibold text-sm transition tab-active";
+                    section.classList.remove('hidden');
+                } else {
+                    btn.className = "px-5 py-3 rounded-t-xl font-semibold text-sm transition tab-inactive";
+                    section.classList.add('hidden');
+                }
+            });
+            if (view === 'interns') renderInterns();
+            if (view === 'past') renderPast();
+            if (view === 'mentor') renderMentors();
+        }
+
+        function renderInterns() {
+            const body = document.getElementById('interns-table-body');
+            body.innerHTML = activeInterns.map((i, idx) => {
+                const isReady = i.attendance >= 24;
+                return `
+                <tr class="hover:bg-slate-50 transition-colors" data-search="${i.full_name.toLowerCase()} ${i.email.toLowerCase()}">
+                    <td class="p-4 text-slate-500 font-medium">${idx + 1}</td>
+                    <td class="p-4">
+                        <div class="font-bold text-[#005af5] text-[13px]">${i.full_name}</div>
+                        <div class="text-slate-500 text-[11px] mt-0.5">${i.email}</div>
+                        <div class="text-slate-500 text-[11px]">${i.phone}</div>
+                    </td>
+                    <td class="p-4 text-slate-700 font-medium text-[13px]">${i.reg_date}</td>
+                    <td class="p-4 text-slate-700 font-medium text-[13px]">${i.attendance} / 24</td>
+                    <td class="p-4">
+                        <div class="text-slate-700 text-[12px]">Pre: <span class="font-semibold">${i.pre_eval}</span></div>
+                        <div class="text-slate-400 text-[11px] mt-0.5">Final: ${i.final_eval}</div>
+                    </td>
+                    <td class="p-4 text-slate-600 font-medium text-[12px]">
+                        ${i.weekly.join(', ') || '—'}
+                    </td>
+                    <td class="p-4 text-right">
+                        ${isReady ?
+                        `<button onclick="issueCertificate(${i.id})" class="inline-flex items-center px-4 py-1.5 rounded-full bg-amber-500 text-white text-[11px] font-bold border border-amber-600 shadow-sm transition-all hover:bg-amber-600 active:scale-95">
+                                Issue / preview certificate
+                             </button>` :
+                        `<button class="inline-flex items-center px-4 py-1.5 rounded-full bg-slate-100 text-[#64748b] text-[11px] font-semibold border border-slate-200 shadow-sm cursor-default">
+                                In Progress (Day ${i.attendance} of 24)
+                             </button>`
+                    }
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        function issueCertificate(id) {
+            const index = activeInterns.findIndex(i => i.id === id);
+            if (index > -1) {
+                const intern = activeInterns.splice(index, 1)[0];
+                const batch = document.getElementById('internBatchSelect').value;
+
+                pastInterns.unshift({
+                    id: intern.id,
+                    full_name: intern.full_name,
+                    email: intern.email,
+                    phone: intern.phone,
+                    batch_code: batch
+                });
+
+                showToast(`Certificate issued for ${intern.full_name}. Moved to archive.`, 'success');
+                renderInterns();
+                switchTab('past');
+            }
+        }
+
+        function renderPast() {
+            const body = document.getElementById('past-table-body');
+            body.innerHTML = pastInterns.map((i, idx) => `
+                <tr class="hover:bg-slate-50 transition-colors" data-search="${i.full_name.toLowerCase()}">
+                    <td class="p-4 text-slate-500 font-medium">${idx + 1}</td>
+                    <td class="p-4">
+                        <div class="font-bold text-slate-800 text-[13px]">${i.full_name}</div>
+                        <div class="text-slate-500 text-[11px] mt-0.5">${i.email}</div>
+                        <div class="text-slate-500 text-[11px]">${i.phone}</div>
+                    </td>
+                    <td class="p-4 text-slate-700 font-medium text-[13px]">${i.batch_code}</td>
+                    <td class="p-4">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 shadow-sm">Sent</span>
+                    </td>
+                    <td class="p-4 text-right">
+                        <button onclick="showToast('Loading PDF viewer...', 'info')" class="inline-block px-3 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition-colors shadow-sm">
+                            View certificate
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderMentors() {
+            const body = document.getElementById('mentor-table-body');
+            body.innerHTML = activeInterns.map((i, idx) => {
+                const assigned = mentorAssignments[i.id] || {};
+                return `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-4 text-slate-500 font-medium">${idx + 1}</td>
+                    <td class="p-4">
+                        <div class="font-bold text-slate-800 text-[13px]">${i.full_name}</div>
+                        <div class="text-slate-500 text-[11px] mt-0.5">${i.email}</div>
+                    </td>
+                    <td class="p-4">${renderMentorSelect(i.id, 'w1', assigned.w1)}</td>
+                    <td class="p-4">${renderMentorSelect(i.id, 'w2', assigned.w2)}</td>
+                    <td class="p-4">${renderMentorSelect(i.id, 'w3', assigned.w3)}</td>
+                    <td class="p-4">${renderMentorSelect(i.id, 'w4', assigned.w4)}</td>
+                    <td class="p-4 text-right">
+                        <button onclick="autoRotateMentors(${i.id})" class="px-3 py-1.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 transition-all mr-2">Auto-Rotate</button>
+                        <button onclick="saveMentor(${i.id}, this)" class="px-3 py-1.5 rounded-lg text-[10px] font-bold bg-amber-500 text-white hover:bg-amber-600 shadow-sm transition-all">Save Schedule</button>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        function renderMentorSelect(internId, weekKey, selectedId) {
+            let options = `<option value="">— Select —</option>`;
+            specialists.forEach(s => {
+                const sel = s.id === selectedId ? 'selected' : '';
+                options += `<option value="${s.id}" ${sel}>${s.display_name}</option>`;
+            });
+            return `<select class="mentor-select w-full border border-slate-200 rounded-lg px-2 py-1.5 text-xs outline-none focus:border-amber-400" data-intern="${internId}" data-week="${weekKey}">${options}</select>`;
+        }
+
+        function autoRotateMentors(id) {
+            const selects = document.querySelectorAll(`select[data-intern="${id}"]`);
+            const shuffled = [...specialists].sort(() => 0.5 - Math.random());
+            selects.forEach((sel, idx) => { if (shuffled[idx]) sel.value = shuffled[idx].id; });
+        }
+
+        function saveMentor(id, btn) {
+            const originalText = btn.textContent;
+            btn.disabled = true; btn.textContent = "Saving...";
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+                showToast("Schedule updated successfully.", "success");
+            }, 600);
+        }
+
+        function saveCertSettings(e) {
+            e.preventDefault();
+            showToast("Certificate settings saved successfully.", "success");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function filterInternsTable(q) {
+            document.querySelectorAll('#interns-table-body tr').forEach(tr => {
+                tr.style.display = tr.dataset.search.includes(q.toLowerCase()) ? '' : 'none';
+            });
+        }
+        function filterPastTable(q) {
+            document.querySelectorAll('#past-table-body tr').forEach(tr => {
+                tr.style.display = tr.dataset.search.includes(q.toLowerCase()) ? '' : 'none';
+            });
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-blue-500';
+            toast.className = `mb-4 px-6 py-3 text-white rounded-xl shadow-xl transition-all duration-300 transform translate-y-10 opacity-0 font-semibold text-sm ${bgColor}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-10', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // --- Initialize ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderInterns();
+        });
+    </script>
+</body>
+
+</html>
